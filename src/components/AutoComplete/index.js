@@ -1,54 +1,13 @@
 import React from "react";
 import classNames from "classnames";
 import Select from "react-select";
-import { makeStyles, useTheme } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import MenuItem from "@material-ui/core/MenuItem";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { emphasize } from "@material-ui/core/styles/colorManipulator";
-
-const suggestions = [
-  { label: "Afghanistan" },
-  { label: "Aland Islands" },
-  { label: "Albania" },
-  { label: "Algeria" },
-  { label: "American Samoa" },
-  { label: "Andorra" },
-  { label: "Angola" },
-  { label: "Anguilla" },
-  { label: "Antarctica" },
-  { label: "Antigua and Barbuda" },
-  { label: "Argentina" },
-  { label: "Armenia" },
-  { label: "Aruba" },
-  { label: "Australia" },
-  { label: "Austria" },
-  { label: "Azerbaijan" },
-  { label: "Bahamas" },
-  { label: "Bahrain" },
-  { label: "Bangladesh" },
-  { label: "Barbados" },
-  { label: "Belarus" },
-  { label: "Belgium" },
-  { label: "Belize" },
-  { label: "Benin" },
-  { label: "Bermuda" },
-  { label: "Bhutan" },
-  { label: "Bolivia, Plurinational State of" },
-  { label: "Bonaire, Sint Eustatius and Saba" },
-  { label: "Bosnia and Herzegovina" },
-  { label: "Botswana" },
-  { label: "Bouvet Island" },
-  { label: "Brazil" },
-  { label: "British Indian Ocean Territory" },
-  { label: "Brunei Darussalam" }
-].map(suggestion => ({
-  value: suggestion.label,
-  label: suggestion.label
-}));
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -206,19 +165,8 @@ const components = {
   ValueContainer
 };
 
-export function AutoComplete({ mutli }) {
+export function AutoComplete({ mutli, suggestions, handleChange, value }) {
   const classes = useStyles();
-  const theme = useTheme();
-  const [single, setSingle] = React.useState(null);
-  const [multi, setMulti] = React.useState(null);
-
-  function handleChangeSingle(value) {
-    setSingle(value);
-  }
-
-  function handleChangeMulti(value) {
-    setMulti(value);
-  }
 
   const selectStyles = {
     input: base => ({
@@ -243,8 +191,8 @@ export function AutoComplete({ mutli }) {
         }}
         options={suggestions}
         components={components}
-        value={multi}
-        onChange={handleChangeMulti}
+        value={value}
+        onChange={handleChange}
         placeholder="Select multiple countries"
         isMulti={mutli}
       />

@@ -30,21 +30,24 @@ function useMe() {
           .get()
           .then(doc => doc.data())
           .then(userDb => {
-            if (!user) {
+            console.log("ser", user);
+
+            if (!userDb) {
               const [name, lastname] =
-                userDb.displayName && user.displayName.split(" ");
+                user.displayName && user.displayName.split(" ");
               const userData = {
-                uid: userDb.uid,
+                uid: user.uid,
                 name,
                 lastname,
-                displayName: userDb.displayName,
-                email: userDb.email,
-                photoURL: userDb.photoURL
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL
               };
               setMe(userData);
               db.collection("users")
-                .doc(userDb.uid)
-                .set(userData);
+                .doc(user.uid)
+                .set(userData)
+                .then(data => console.log(data));
             } else {
               setMe(user);
             }
