@@ -30,8 +30,6 @@ function useMe() {
           .get()
           .then(doc => doc.data())
           .then(userDb => {
-            console.log("ser", user);
-
             if (!userDb) {
               const [name, lastname] =
                 user.displayName && user.displayName.split(" ");

@@ -1,6 +1,5 @@
 import React from "react";
-import Logo from "./assets/logo.png";
-import { Avatar, AppBar, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
 
 export function Header() {
   return (

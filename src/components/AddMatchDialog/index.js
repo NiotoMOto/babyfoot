@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import { AutoComplete } from "../AutoComplete";
 import { db, extractData } from "../../firebaseConfig";
+import { firestore } from "firebase/app";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -22,12 +23,13 @@ function saveMatch(equipeBleue, equipeRouge) {
   const matchData = {
     equipeBleue: {
       ...equipeBleue,
-      members: equipeBleue.members.map(m => m.value)
+      members: equipeBleue.members.map(m => db.collection("users").doc(m.value))
     },
     equipeRouge: {
       ...equipeRouge,
-      members: equipeRouge.members.map(m => m.value)
-    }
+      members: equipeRouge.members.map(m => db.collection("users").doc(m.value))
+    },
+    createdAt: firestore.FieldValue.serverTimestamp()
   };
   return db.collection("matchs").add(matchData);
 }
@@ -80,7 +82,7 @@ export function AddMatchdialog({ open, handleClose }) {
           </Button>
         </Toolbar>
       </AppBar>
-      <div style={{ marginTop: "20px", padding: "10px" }}>
+      <div style={{ marginTop: "20px", padding: "30px" }}>
         <div style={{ marginBottom: "20px" }}>
           <h2 style={{ textAlign: "center" }}>Equipe bleue</h2>
           <AutoComplete

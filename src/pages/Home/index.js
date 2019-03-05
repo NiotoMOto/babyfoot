@@ -10,6 +10,7 @@ export function Home() {
   useEffect(() => {
     const unsubscribe = db
       .collection("matchs")
+      .orderBy("createdAt", "desc")
       .limit(50)
       .onSnapshot(doc => {
         setMatchs(extractData(doc));
