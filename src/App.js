@@ -46,8 +46,7 @@ function useMe() {
               setMe(userData);
               db.collection("users")
                 .doc(user.uid)
-                .set(userData)
-                .then(data => console.log(data));
+                .set(userData);
             } else {
               setMe(user);
             }

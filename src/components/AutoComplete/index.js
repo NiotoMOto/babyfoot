@@ -11,8 +11,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    height: 250
+    flexGrow: 1
   },
   input: {
     display: "flex",
@@ -26,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     overflow: "hidden"
   },
   chip: {
-    margin: `12px 14px`
+    margin: `6px 7px`
   },
   chipFocused: {},
   noOptionsMessage: {
@@ -165,7 +164,13 @@ const components = {
   ValueContainer
 };
 
-export function AutoComplete({ mutli, suggestions, handleChange, value }) {
+export function AutoComplete({
+  mutli,
+  suggestions,
+  handleChange,
+  value,
+  placeholder
+}) {
   const classes = useStyles();
 
   const selectStyles = {
@@ -193,7 +198,7 @@ export function AutoComplete({ mutli, suggestions, handleChange, value }) {
         components={components}
         value={value}
         onChange={handleChange}
-        placeholder="Select multiple countries"
+        placeholder={placeholder}
         isMulti={mutli}
       />
     </div>

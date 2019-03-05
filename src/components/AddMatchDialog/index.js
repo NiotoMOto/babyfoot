@@ -6,7 +6,8 @@ import {
   Toolbar,
   IconButton,
   Button,
-  Divider
+  Divider,
+  TextField
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
@@ -15,6 +16,20 @@ import { db, extractData } from "../../firebaseConfig";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
+}
+
+function saveMatch(equipeBleue, equipeRouge) {
+  const matchData = {
+    equipeBleue: {
+      ...equipeBleue,
+      members: equipeBleue.members.map(m => m.value)
+    },
+    equipeRouge: {
+      ...equipeRouge,
+      members: equipeRouge.members.map(m => m.value)
+    }
+  };
+  return db.collection("matchs").add(matchData);
 }
 
 function getUserAutocomplete(users, usedUsers) {
@@ -28,8 +43,8 @@ function getUserAutocomplete(users, usedUsers) {
 
 export function AddMatchdialog({ open, handleClose }) {
   const [users, setUsers] = useState([]);
-  const [equipe1, setEquipe1] = useState([]);
-  const [equipe2, setEquipe2] = useState([]);
+  const [equipeBleue, setEquipeBleue] = useState({ members: [], score: 0 });
+  const [equipeRouge, setEquipeRouge] = useState({ members: [], score: 0 });
   useEffect(() => {
     db.collection("users")
       .limit(50)
@@ -39,8 +54,8 @@ export function AddMatchdialog({ open, handleClose }) {
       });
   }, []);
   const autocompleteUsers = getUserAutocomplete(users, [
-    ...equipe1,
-    ...equipe2
+    ...equipeBleue.members,
+    ...equipeRouge.members
   ]);
   return (
     <Dialog
@@ -56,27 +71,57 @@ export function AddMatchdialog({ open, handleClose }) {
           <Typography variant="h6" color="inherit" style={{ flex: 1 }}>
             Match
           </Typography>
-          <Button color="inherit" onClick={handleClose}>
+          <Button
+            color="inherit"
+            onClick={() =>
+              saveMatch(equipeBleue, equipeRouge).then(() => handleClose())
+            }>
             ajouter
           </Button>
         </Toolbar>
       </AppBar>
-      <div style={{ textAlign: "center" }}>
-        <h2>Equipe 1</h2>
-        <AutoComplete
-          mutli={true}
-          suggestions={autocompleteUsers}
-          handleChange={value => setEquipe1(value)}
-          value={equipe1}
-        />
+      <div style={{ marginTop: "20px", padding: "10px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h2 style={{ textAlign: "center" }}>Equipe bleue</h2>
+          <AutoComplete
+            key="equipeBleue"
+            mutli={true}
+            suggestions={autocompleteUsers}
+            handleChange={value =>
+              setEquipeBleue({ ...equipeBleue, members: value })
+            }
+            value={equipeBleue.members}
+            placeholder="Membre(s) de l'équipe bleue"
+          />
+          <TextField
+            type="number"
+            label="score"
+            onChange={e =>
+              setEquipeBleue({ ...equipeBleue, score: e.target.value })
+            }
+          />
+        </div>
         <Divider />
-        <h2>Equipe 2</h2>
-        <AutoComplete
-          mutli={true}
-          suggestions={autocompleteUsers}
-          handleChange={value => setEquipe2(value)}
-          value={equipe2}
-        />
+        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
+          <h2 style={{ textAlign: "center" }}>Equipe rouge</h2>
+          <AutoComplete
+            key="equipeRouge"
+            mutli={true}
+            suggestions={autocompleteUsers}
+            handleChange={value =>
+              setEquipeRouge({ ...equipeRouge, members: value })
+            }
+            value={equipeRouge.members}
+            placeholder="Membre(s) de l'équipe rouge"
+          />
+          <TextField
+            type="number"
+            label="score"
+            onChange={e =>
+              setEquipeRouge({ ...equipeRouge, score: e.target.value })
+            }
+          />
+        </div>
       </div>
     </Dialog>
   );
