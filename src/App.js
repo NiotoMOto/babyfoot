@@ -26,18 +26,16 @@ function useMe() {
   useEffect(() => {
     auth().onAuthStateChanged(user => {
       if (user) {
+        console.log("user", user);
         db.collection("users")
           .doc(user.uid)
           .get()
           .then(doc => doc.data())
           .then(userDb => {
+            console.log("userDb", userDb);
             if (!userDb) {
-              const [name, lastname] =
-                user.displayName && user.displayName.split(" ");
               const userData = {
                 uid: user.uid,
-                name,
-                lastname,
                 displayName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL
