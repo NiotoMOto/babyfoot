@@ -6,9 +6,15 @@ export function AddMatchButton({ onClick }) {
   return (
     <div>
       <Fab
-        style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 99 }}
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 99,
+          color: "white",
+          background: "black"
+        }}
         size="medium"
-        color="secondary"
         aria-label="Add"
         onClick={onClick}>
         <AddIcon />

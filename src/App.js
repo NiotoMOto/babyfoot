@@ -26,13 +26,11 @@ function useMe() {
   useEffect(() => {
     auth().onAuthStateChanged(user => {
       if (user) {
-        console.log("user", user);
         db.collection("users")
           .doc(user.uid)
           .get()
           .then(doc => doc.data())
           .then(userDb => {
-            console.log("userDb", userDb);
             if (!userDb) {
               const userData = {
                 uid: user.uid,

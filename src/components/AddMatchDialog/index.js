@@ -24,11 +24,19 @@ function saveMatch(equipeBleue, equipeRouge) {
   const matchData = {
     equipeBleue: {
       ...equipeBleue,
-      members: equipeBleue.members.map(m => db.collection("users").doc(m.value))
+      score: parseInt(equipeBleue.score),
+      members: equipeBleue.members.map(m =>
+        db.collection("users").doc(m.value)
+      ),
+      victory: equipeBleue.score > equipeRouge.score
     },
     equipeRouge: {
       ...equipeRouge,
-      members: equipeRouge.members.map(m => db.collection("users").doc(m.value))
+      score: parseInt(equipeRouge.score),
+      members: equipeRouge.members.map(m =>
+        db.collection("users").doc(m.value)
+      ),
+      victory: equipeRouge.score > equipeBleue.score
     },
     createdAt: firestore.FieldValue.serverTimestamp(),
     week: dayjs(new Date()).week()

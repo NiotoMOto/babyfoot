@@ -5,11 +5,17 @@ import { db, extractData } from "../../firebaseConfig";
 import { Match } from "../../components/Match";
 import dayjs from "dayjs";
 import { Typography } from "@material-ui/core";
+import { MatchsStats } from "../../MatchsStats";
 
 function getTitle(currentWeek, week) {
   return currentWeek === week
     ? "Matchs de cette semaine"
     : `Matchs de la semaine ${week}`;
+}
+function getTitleStats(currentWeek, week) {
+  return currentWeek === week
+    ? "Stats de cette semaine"
+    : `Stats de la semaine ${week}`;
 }
 
 export function Matchs({ week = dayjs(new Date()).week() }) {
@@ -17,7 +23,6 @@ export function Matchs({ week = dayjs(new Date()).week() }) {
   const [matchs, setMatchs] = useState([]);
   const currentWeek = dayjs(new Date()).week();
   useEffect(() => {
-    console.log(week);
     const unsubscribe = db
       .collection("matchs")
       .where("week", "==", week)
@@ -30,7 +35,13 @@ export function Matchs({ week = dayjs(new Date()).week() }) {
   }, []);
   return (
     <div style={{ marginBottom: "90px", marginTop: "30px" }}>
-      <Typography style={{ margin: "10px" }} variant="h4">
+      <Typography style={{ margin: "10px" }} variant="h5">
+        {getTitleStats(currentWeek, week)}
+      </Typography>
+      <div style={{ margin: "10px" }}>
+        <MatchsStats matchs={matchs} />
+      </div>
+      <Typography style={{ margin: "10px" }} variant="h5">
         {getTitle(currentWeek, week)}
       </Typography>
       <AddMatchButton onClick={() => setOpenAddMatch(true)} />

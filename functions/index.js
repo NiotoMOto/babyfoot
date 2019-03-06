@@ -19,7 +19,6 @@ function storeStates(team) {
 exports.addStats = functions.firestore
   .document("matchs/{matchId}")
   .onCreate((snap, context) => {
-    console.log(snap.data());
     const match = snap.data();
     Promise.all([storeStates]).catch(err => console.log(err));
     return "Send OK";

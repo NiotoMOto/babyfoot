@@ -9,6 +9,7 @@
     "classnames": "^2.2.6",
     "dayjs": "^1.8.8",
     "firebaseui": "^3.5.2",
+    "lodash": "^4.17.11",
     "react": "16.8.0-alpha.0",
     "react-dom": "16.8.0-alpha.0",
     "react-image-crop": "^6.0.12",
