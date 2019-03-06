@@ -1,5 +1,6 @@
 {
   "projects": {
-    "staging": "babyfoot-5ca0a"
+    "staging": "babyfoot-5ca0a",
+    "default": "babyfoot-5ca0a"
   }
 }

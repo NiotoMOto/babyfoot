@@ -1,9 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
 
 import "./index.css";
 import { App } from "./App";
 import * as serviceWorker from "./serviceWorker";
+
+dayjs.extend(weekOfYear);
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

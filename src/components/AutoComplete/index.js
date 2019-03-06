@@ -169,7 +169,8 @@ export function AutoComplete({
   suggestions,
   handleChange,
   value,
-  placeholder
+  placeholder,
+  menuPlacement = "bottom"
 }) {
   const classes = useStyles();
 
@@ -200,6 +201,7 @@ export function AutoComplete({
         onChange={handleChange}
         placeholder={placeholder}
         isMulti={mutli}
+        menuPlacement={menuPlacement}
       />
     </div>
   );

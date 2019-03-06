@@ -12,11 +12,12 @@ import { DefaultLayout } from "./DefaultLayout";
 import { auth, db } from "./firebaseConfig";
 import { Loader } from "./components/Loader";
 import "semantic-ui-css/semantic.min.css";
+import { MatchsPage } from "./pages/Matchs";
 
 export const UserContext = React.createContext();
 
-const withAuth = user => Component => () =>
-  user ? <Component /> : <Redirect to="/login" />;
+const withAuth = user => Component => props =>
+  user ? <Component {...props} /> : <Redirect to="/login" />;
 
 function useMe() {
   const [me, setMe] = useState();
@@ -72,6 +73,11 @@ function Routes({ me, noUser }) {
           ) : (
             <>
               <DefaultLayout exact path="/" component={withAuthUser(Home)} />
+              <DefaultLayout
+                exact
+                path="/matchs/:week"
+                component={withAuthUser(MatchsPage)}
+              />
             </>
           )}
         </Switch>

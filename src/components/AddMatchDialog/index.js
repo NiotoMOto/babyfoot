@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import {
   Dialog,
   Slide,
@@ -29,7 +30,8 @@ function saveMatch(equipeBleue, equipeRouge) {
       ...equipeRouge,
       members: equipeRouge.members.map(m => db.collection("users").doc(m.value))
     },
-    createdAt: firestore.FieldValue.serverTimestamp()
+    createdAt: firestore.FieldValue.serverTimestamp(),
+    week: dayjs(new Date()).week()
   };
   return db.collection("matchs").add(matchData);
 }
@@ -115,6 +117,7 @@ export function AddMatchdialog({ open, handleClose }) {
             }
             value={equipeRouge.members}
             placeholder="Membre(s) de l'équipe rouge"
+            menuPlacement="top"
           />
           <TextField
             type="number"

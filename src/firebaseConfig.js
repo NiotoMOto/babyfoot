@@ -16,7 +16,9 @@ const config = {
 firebase.initializeApp(config);
 
 export const db = firebase.firestore();
-firebase.firestore().enablePersistence();
+firebase
+  .firestore()
+  .enablePersistence({ experimentalTabSynchronization: true });
 // export const storage = firebase.storage();
 
 export const provider = new firebase.auth.GoogleAuthProvider();
