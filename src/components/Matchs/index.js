@@ -5,7 +5,7 @@ import { db, extractData } from "../../firebaseConfig";
 import { Match } from "../../components/Match";
 import dayjs from "dayjs";
 import { Typography } from "@material-ui/core";
-import { MatchsStats } from "../../MatchsStats";
+import { MatchsStats } from "../MatchsStats";
 
 function getTitle(currentWeek, week) {
   return currentWeek === week

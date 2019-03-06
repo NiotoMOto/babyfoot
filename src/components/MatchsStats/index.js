@@ -4,8 +4,8 @@ import { Paper, Tabs, Tab, Typography, Chip } from "@material-ui/core";
 import get from "lodash/get";
 import map from "lodash/map";
 import orderBy from "lodash/orderBy";
-import { User } from "../components/User";
-import { db, extractData } from "../firebaseConfig";
+import { User } from "../User";
+import { db, extractData } from "../../firebaseConfig";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
@@ -27,11 +27,11 @@ function mapUser(team, stats, otherTeam) {
       docRef: member,
       victories: calculate(
         get(stats[member.id], "victories", 0),
-        team.victory ? 0 : 1
+        team.victory ? 1 : 0
       ),
       defaites: calculate(
         get(stats[member.id], "defaites", 0),
-        !team.victory ? 0 : 1
+        !team.victory ? 1 : 0
       ),
       party: calculate(get(stats[member.id], "party", 0), 1),
       buts: calculate(get(stats[member.id], "buts", 0), team.score),
@@ -55,7 +55,6 @@ function StatLine({ label, value }) {
 }
 
 function statsByUser(matchs, points) {
-  console.log(points);
   const stats = {};
 
   matchs.map(match => {
@@ -72,7 +71,6 @@ export function MatchsStats({ matchs }) {
   const [tab, setTab] = React.useState(0);
   const [points, setPoints] = React.useState(null);
   const stats = statsByUser(matchs, points);
-  console.log(stats);
 
   function handleChange(event, newValue) {
     setTab(newValue);
