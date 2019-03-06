@@ -24,7 +24,7 @@ function saveMatch(equipeBleue, equipeRouge) {
   const matchData = {
     equipeBleue: {
       ...equipeBleue,
-      score: parseInt(equipeBleue.score),
+      score: equipeBleue.score,
       members: equipeBleue.members.map(m =>
         db.collection("users").doc(m.value)
       ),
@@ -32,7 +32,7 @@ function saveMatch(equipeBleue, equipeRouge) {
     },
     equipeRouge: {
       ...equipeRouge,
-      score: parseInt(equipeRouge.score),
+      score: equipeRouge.score,
       members: equipeRouge.members.map(m =>
         db.collection("users").doc(m.value)
       ),
@@ -94,7 +94,7 @@ export function AddMatchdialog({ open, handleClose }) {
       </AppBar>
       <div style={{ marginTop: "20px", padding: "30px" }}>
         <div style={{ marginBottom: "20px" }}>
-          <h2 style={{ textAlign: "center" }}>Equipe bleue</h2>
+          <h2 style={{ textAlign: "center" }}>Coté bleue</h2>
           <AutoComplete
             key="equipeBleue"
             mutli={true}
@@ -109,13 +109,16 @@ export function AddMatchdialog({ open, handleClose }) {
             type="number"
             label="score"
             onChange={e =>
-              setEquipeBleue({ ...equipeBleue, score: e.target.value })
+              setEquipeBleue({
+                ...equipeBleue,
+                score: parseInt(e.target.value)
+              })
             }
           />
         </div>
         <Divider />
         <div style={{ marginBottom: "20px", marginTop: "20px" }}>
-          <h2 style={{ textAlign: "center" }}>Equipe rouge</h2>
+          <h2 style={{ textAlign: "center" }}>Coté rouge</h2>
           <AutoComplete
             key="equipeRouge"
             mutli={true}
@@ -131,7 +134,10 @@ export function AddMatchdialog({ open, handleClose }) {
             type="number"
             label="score"
             onChange={e =>
-              setEquipeRouge({ ...equipeRouge, score: e.target.value })
+              setEquipeRouge({
+                ...equipeRouge,
+                score: parseInt(e.target.value)
+              })
             }
           />
         </div>

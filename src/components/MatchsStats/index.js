@@ -107,7 +107,7 @@ export function MatchsStats({ matchs }) {
                     )}
                   />
                   <StatLine
-                    label="Buts equipe bleue"
+                    label="Buts coté bleue"
                     value={reduce(
                       matchs,
                       (sum, n) => sum + n.equipeBleue.score,
@@ -115,7 +115,7 @@ export function MatchsStats({ matchs }) {
                     )}
                   />
                   <StatLine
-                    label="Buts equipe rouge"
+                    label="Buts coté rouge"
                     value={reduce(
                       matchs,
                       (sum, n) => sum + n.equipeRouge.score,
