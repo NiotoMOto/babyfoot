@@ -31,7 +31,7 @@ function mapUser(team, stats, otherTeam) {
       ),
       defaites: calculate(
         get(stats[member.id], "defaites", 0),
-        !team.victory ? 1 : 0
+        !otherTeam.victory ? 1 : 0
       ),
       party: calculate(get(stats[member.id], "party", 0), 1),
       buts: calculate(get(stats[member.id], "buts", 0), team.score),

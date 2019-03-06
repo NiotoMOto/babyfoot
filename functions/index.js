@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const _ = require("lodash");
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
@@ -10,16 +11,56 @@ const db = admin.firestore();
 //   response.send("Hello from Firebase!");
 // });
 
-function storeStates(team) {
-  team.members.map(userRef => {
-    return userRef.get().then(doc => console.log(doc.data()));
-  });
+function add(sum = 0, nb) {
+  return sum + nb;
+}
+
+function getStats(user, team, otherTeam) {
+  return {
+    "stats.buts": add(_.get(user.stats, "buts"), team.score),
+    "stats.butsNeg": add(_.get(user.stats, "butsNeg"), otherTeam.score),
+    "stats.defeats": add(
+      _.get(user.stats, "defeats"),
+      otherTeam.victory ? 1 : 0
+    ),
+    "stats.victories": add(
+      _.get(user.stats, "victories"),
+      team.victory ? 1 : 0
+    ),
+    "stats.parties": add(_.get(user.stats, "parties"), 1)
+  };
+}
+
+function storeStates(match) {
+  return Promise.all([
+    ...match.equipeBleue.members.map(userRef => {
+      return userRef.get().then(doc => {
+        const data = doc.data();
+
+        return userRef.update(
+          getStats(data, match.equipeBleue, match.equipeRouge)
+        );
+      });
+    }),
+    ...match.equipeRouge.members.map(userRef => {
+      return userRef.get().then(doc => {
+        const data = doc.data();
+
+        return userRef.update(
+          getStats(data, match.equipeRouge, match.equipeBleue)
+        );
+      });
+    })
+  ]);
 }
 
 exports.addStats = functions.firestore
   .document("matchs/{matchId}")
   .onCreate((snap, context) => {
     const match = snap.data();
-    Promise.all([storeStates]).catch(err => console.log(err));
-    return "Send OK";
+    return Promise.all([storeStates(match)])
+      .then(() => {
+        return "Send OK";
+      })
+      .catch(err => err);
   });
