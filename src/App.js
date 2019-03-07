@@ -13,6 +13,7 @@ import { auth, db } from "./firebaseConfig";
 import { Loader } from "./components/Loader";
 import "semantic-ui-css/semantic.min.css";
 import { MatchsPage } from "./pages/Matchs";
+import { ProfilPage } from "./pages/profil";
 
 export const UserContext = React.createContext();
 
@@ -73,6 +74,11 @@ function Routes({ me, noUser }) {
                 exact
                 path="/matchs/:week"
                 component={withAuthUser(MatchsPage)}
+              />
+              <DefaultLayout
+                exact
+                path="/profil/:id"
+                component={withAuthUser(ProfilPage)}
               />
             </>
           )}

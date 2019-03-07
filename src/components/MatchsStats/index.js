@@ -1,27 +1,42 @@
 import React, { Fragment, useEffect } from "react";
 import reduce from "lodash/reduce";
-import { Paper, Tabs, Tab, Typography, Chip } from "@material-ui/core";
+import { Paper, Tabs, Tab } from "@material-ui/core";
 import get from "lodash/get";
 import map from "lodash/map";
+import sortBy from "lodash/sortBy";
 import orderBy from "lodash/orderBy";
 import { User } from "../User";
 import { db, extractData } from "../../firebaseConfig";
+import { StatLine } from "../StatsLine";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
 }
 
-function calculatePoint(stat, points) {
-  return (
-    stat.victories * points.victory +
-    stat.defaites * points.defeat +
-    stat.buts * points.but +
-    stat.butNeg * points.butneg
+function arrayExpo(ideal) {
+  return new Array(ideal)
+    .fill(null)
+    .map((n, i) => Math.min(Math.pow(i + 1, 2) / Math.pow(30, 2), 1));
+}
+
+function computePoint(stat, points) {
+  const arrayMatchs = arrayExpo(points.ideal);
+  const sortVictoryRatio = stat.ratioBut.sort((a, b) => b - a);
+  return Math.round(
+    (sortVictoryRatio[Math.round(stat.ratioBut.length / 2 - 1)] * points.but +
+      (stat.victories / stat.party) * points.victory) *
+      arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1]
   );
 }
 
 function mapUser(team, stats, otherTeam) {
+  const maxBut = Math.max(team.score, otherTeam.score);
   team.members.forEach(member => {
+    const victorues = calculate(
+      get(stats[member.id], "victories", 0),
+      team.victory ? 1 : 0
+    );
+    const parties = calculate(get(stats[member.id], "party", 0), 1);
     stats[member.id] = {
       ...stats[member.id],
       docRef: member,
@@ -29,29 +44,19 @@ function mapUser(team, stats, otherTeam) {
         get(stats[member.id], "victories", 0),
         team.victory ? 1 : 0
       ),
+      ratioBut: get(stats[member.id], "ratioBut", []).concat(
+        team.score / maxBut
+      ),
       defaites: calculate(
         get(stats[member.id], "defaites", 0),
         otherTeam.victory ? 1 : 0
       ),
+      ratioVictories: Math.round((victorues / parties) * 100),
       party: calculate(get(stats[member.id], "party", 0), 1),
       buts: calculate(get(stats[member.id], "buts", 0), team.score),
       butNeg: calculate(get(stats[member.id], "butNeg", 0), otherTeam.score)
     };
   });
-}
-
-function StatLine({ label, value }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginBottom: "10px"
-      }}>
-      <Typography variant="overline">{label}</Typography>
-      <Chip style={{}} color="primary" label={value} />
-    </div>
-  );
 }
 
 function statsByUser(matchs, points) {
@@ -63,7 +68,7 @@ function statsByUser(matchs, points) {
   });
   return map(stats, stat => ({
     ...stat,
-    points: calculatePoint(stat, points)
+    points: computePoint(stat, points)
   }));
 }
 
@@ -141,11 +146,12 @@ export function MatchsStats({ matchs }) {
               )}
               {tab === 2 && (
                 <Fragment>
-                  {orderBy(stats, ["victories"], ["desc"]).map(stat => (
+                  {orderBy(stats, ["ratioVictories"], ["desc"]).map(stat => (
                     <StatLine
                       key={stat.docRef.id}
                       label={<User docRef={stat.docRef} />}
-                      value={stat.victories}
+                      value={`${stat.ratioVictories} %`}
+                      tooltip="test"
                     />
                   ))}
                 </Fragment>
