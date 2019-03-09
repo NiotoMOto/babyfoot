@@ -37,7 +37,8 @@ function useMe() {
                 uid: user.uid,
                 displayName: user.displayName,
                 email: user.email,
-                photoURL: user.photoURL
+                photoURL: user.photoURL,
+                stats: {}
               };
               setMe(userData);
               db.collection("users")

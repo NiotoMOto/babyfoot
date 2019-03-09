@@ -42,11 +42,11 @@ function storeStates(match) {
         );
       });
     }),
-    ...match.equipeRouge.members.map(userRouge => {
-      return userRef.get().then(doc => {
+    ...match.equipeRouge.members.map(userRefRouge => {
+      return userRefRouge.get().then(doc => {
         const userRouge = doc.data();
 
-        return userRef.update(
+        return userRefRouge.update(
           getStats(userRouge, match.equipeRouge, match.equipeBleue)
         );
       });

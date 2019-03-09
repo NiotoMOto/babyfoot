@@ -3,15 +3,7 @@ import "firebase/firestore";
 import "firebase/auth";
 import "firebase/storage";
 import firebaseui from "firebaseui";
-
-const config = {
-  apiKey: "AIzaSyD9tZe0QQNZIpyugTkqrwiGyMb7JqOVFvo",
-  authDomain: "babyfoot-5ca0a.firebaseapp.com",
-  databaseURL: "https://babyfoot-5ca0a.firebaseio.com",
-  projectId: "babyfoot-5ca0a",
-  storageBucket: "babyfoot-5ca0a.appspot.com",
-  messagingSenderId: "736751591167"
-};
+import { config } from "./firebase.configs";
 
 firebase.initializeApp(config);
 

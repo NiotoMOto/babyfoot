@@ -21,9 +21,7 @@ export function ProfilPage({ match }) {
         <div
           style={{
             margin: "10px",
-            marginTop: "30px",
-            boxShadow:
-              "0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);"
+            marginTop: "30px"
           }}>
           {user && (
             <Paper style={{ paddingBottom: "40px", position: "relative" }}>
@@ -39,7 +37,9 @@ export function ProfilPage({ match }) {
                 <Avatar
                   src={user.photoURL}
                   style={{
-                    margin: 0
+                    margin: 0,
+                    boxShadow:
+                      " 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)"
                   }}
                 />
               </div>
@@ -49,7 +49,9 @@ export function ProfilPage({ match }) {
                   variant="h6">
                   {user.displayName} {me.uid === user.uid ? "( vous )" : ""}
                 </Typography>
-                <ProfileStats user={user} currentUser={me} />
+                {user.stats && me.stats && (
+                  <ProfileStats user={user} currentUser={me} />
+                )}
               </div>
             </Paper>
           )}

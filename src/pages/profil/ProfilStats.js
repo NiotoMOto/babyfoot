@@ -4,8 +4,6 @@ import { roundRation } from "../../utils";
 
 export function ProfileStats({ currentUser, user }) {
   const isCurrentUser = currentUser.uid === user.uid;
-  // console.log(currentUser.uid, user.uid);
-  console.log("======= >", isCurrentUser);
   return (
     <div style={{ margin: "10px" }}>
       <ProfileLine
@@ -18,7 +16,7 @@ export function ProfileStats({ currentUser, user }) {
         label="Buts donnés / buts pris"
         value={roundRation(user.stats.buts / user.stats.butsNeg)}
         valueCurrentUser={roundRation(
-          user.stats.butsNeg / currentUser.stats.butsNeg
+          currentUser.stats.buts / currentUser.stats.butsNeg
         )}
         isCurrentUser={isCurrentUser}
       />
