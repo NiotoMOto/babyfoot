@@ -33,21 +33,21 @@ function getStats(user, team, otherTeam) {
 
 function storeStates(match) {
   return Promise.all([
-    ...match.equipeBleue.members.map(userRef => {
-      return userRef.get().then(doc => {
-        const data = doc.data();
+    ...match.equipeBleue.members.map(userRefBleu => {
+      return userRefBleu.get().then(doc => {
+        const userBleu = doc.data();
 
-        return userRef.update(
-          getStats(data, match.equipeBleue, match.equipeRouge)
+        return userRefBleu.update(
+          getStats(userBleu, match.equipeBleue, match.equipeRouge)
         );
       });
     }),
-    ...match.equipeRouge.members.map(userRef => {
+    ...match.equipeRouge.members.map(userRouge => {
       return userRef.get().then(doc => {
-        const data = doc.data();
+        const userRouge = doc.data();
 
         return userRef.update(
-          getStats(data, match.equipeRouge, match.equipeBleue)
+          getStats(userRouge, match.equipeRouge, match.equipeBleue)
         );
       });
     })

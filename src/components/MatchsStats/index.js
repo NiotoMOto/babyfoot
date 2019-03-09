@@ -39,6 +39,7 @@ function mapUser(team, stats, otherTeam) {
     const parties = calculate(get(stats[member.id], "party", 0), 1);
     stats[member.id] = {
       ...stats[member.id],
+      member: member.displayName,
       docRef: member,
       victories: calculate(
         get(stats[member.id], "victories", 0),
@@ -66,6 +67,7 @@ function statsByUser(matchs, points) {
     mapUser(match.equipeBleue, stats, match.equipeRouge);
     mapUser(match.equipeRouge, stats, match.equipeBleue);
   });
+  console.log(stats);
   return map(stats, stat => ({
     ...stat,
     points: computePoint(stat, points)

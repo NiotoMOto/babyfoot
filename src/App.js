@@ -44,7 +44,7 @@ function useMe() {
                 .doc(user.uid)
                 .set(userData);
             } else {
-              setMe(user);
+              setMe(userDb);
             }
           });
       } else {

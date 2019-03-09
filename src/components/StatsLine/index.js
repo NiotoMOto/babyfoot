@@ -1,7 +1,18 @@
 import React from "react";
 import { Typography, Chip } from "@material-ui/core";
+import { roundRation } from "../../utils";
 
-export function StatLine({ label, value }) {
+function getColorDiff(diff, inverseColor) {
+  if (diff === 0) {
+    return "black";
+  } else if (diff > 0) {
+    return !inverseColor ? "green" : "red";
+  }
+  return !inverseColor ? "red" : "green";
+}
+
+export function StatLine({ label, value, diff, inverseColor, displayDiff }) {
+  const showDIsplayDiff = displayDiff;
   return (
     <div
       style={{
@@ -10,7 +21,28 @@ export function StatLine({ label, value }) {
         marginBottom: "10px"
       }}>
       <Typography variant="overline">{label}</Typography>
-      <Chip style={{}} color="primary" label={value} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "10px"
+        }}>
+        <Chip color="primary" label={value} />
+        {showDIsplayDiff && (
+          <div
+            style={{
+              marginLeft: "10px",
+              height: "30px",
+              lineHeight: "30px",
+              width: "50px",
+              textAlign: "right",
+              color: getColorDiff(diff, inverseColor)
+            }}>
+            {diff > 0 ? "+" : ""}
+            {roundRation(diff)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

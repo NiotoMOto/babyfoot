@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../firebaseConfig";
 import { Paper, Avatar, Typography } from "@material-ui/core";
 import { UserContext } from "../../App";
+import { ProfileStats } from "./ProfilStats";
 
 export function ProfilPage({ match }) {
-  console.log(match.params.id);
   const userId = match.params.id;
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -44,9 +44,12 @@ export function ProfilPage({ match }) {
                 />
               </div>
               <div style={{ paddingTop: "30px" }}>
-                <Typography style={{ textAlign: "center" }} variant="h6">
-                  {user.displayName}
+                <Typography
+                  style={{ textAlign: "center", marginBottom: "20px" }}
+                  variant="h6">
+                  {user.displayName} {me.uid === user.uid ? "( vous )" : ""}
                 </Typography>
+                <ProfileStats user={user} currentUser={me} />
               </div>
             </Paper>
           )}
