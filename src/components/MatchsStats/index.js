@@ -1,13 +1,15 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import reduce from "lodash/reduce";
 import { Paper, Tabs, Tab } from "@material-ui/core";
 import get from "lodash/get";
 import map from "lodash/map";
-import sortBy from "lodash/sortBy";
 import orderBy from "lodash/orderBy";
 import { User } from "../User";
 import { db, extractData } from "../../firebaseConfig";
 import { StatLine } from "../StatsLine";
+import { CloseWeek } from "../CloseWeek";
+import { LeaderBoard } from "../LeaderBoard";
+import dayjs from "dayjs";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
@@ -39,7 +41,6 @@ function mapUser(team, stats, otherTeam) {
     const parties = calculate(get(stats[member.id], "party", 0), 1);
     stats[member.id] = {
       ...stats[member.id],
-      member: member.displayName,
       docRef: member,
       victories: calculate(
         get(stats[member.id], "victories", 0),
@@ -67,16 +68,16 @@ function statsByUser(matchs, points) {
     mapUser(match.equipeBleue, stats, match.equipeRouge);
     mapUser(match.equipeRouge, stats, match.equipeBleue);
   });
-  console.log(stats);
   return map(stats, stat => ({
     ...stat,
     points: computePoint(stat, points)
   }));
 }
 
-export function MatchsStats({ matchs }) {
-  const [tab, setTab] = React.useState(0);
-  const [points, setPoints] = React.useState(null);
+export function MatchsStats({ matchs, week, year = dayjs().year() }) {
+  const [tab, setTab] = useState(0);
+  const [points, setPoints] = useState(null);
+  const [weeksDb, setWeekDb] = useState(null);
   const stats = statsByUser(matchs, points);
 
   function handleChange(event, newValue) {
@@ -87,21 +88,47 @@ export function MatchsStats({ matchs }) {
     db.collection("points").onSnapshot(doc => {
       setPoints(extractData(doc)[0]);
     });
+    db.collection("weeks")
+      .where("week", "==", week)
+      .where("year", "==", year)
+      .onSnapshot(doc => {
+        console.log("doc stats", doc);
+        if (doc.docs.length) {
+          setWeekDb(extractData(doc)[0]);
+        }
+      });
   }, []);
 
   return (
     <div>
       {matchs && (
         <Fragment>
+          <CloseWeek week={parseInt(week)} stats={stats} />
+          {weeksDb && <LeaderBoard />}
           <Paper square>
             <Tabs value={tab} onChange={handleChange}>
-              <Tab label="Générales" />
               <Tab label="Points" />
+              <Tab label="Générales" />
               <Tab label="Victoires" />
               <Tab label="Buts" />
             </Tabs>
             <div style={{ padding: "10px" }}>
               {tab === 0 && (
+                <Fragment>
+                  {points && (
+                    <Fragment>
+                      {orderBy(stats, ["points"], ["desc"]).map(stat => (
+                        <StatLine
+                          key={stat.docRef.id}
+                          label={<User docRef={stat.docRef} />}
+                          value={stat.points}
+                        />
+                      ))}
+                    </Fragment>
+                  )}
+                </Fragment>
+              )}
+              {tab === 1 && (
                 <Fragment>
                   <StatLine label="Matchs Joué" value={matchs.length} />
                   <StatLine
@@ -129,21 +156,6 @@ export function MatchsStats({ matchs }) {
                       0
                     )}
                   />
-                </Fragment>
-              )}
-              {tab === 1 && (
-                <Fragment>
-                  {points && (
-                    <Fragment>
-                      {orderBy(stats, ["points"], ["desc"]).map(stat => (
-                        <StatLine
-                          key={stat.docRef.id}
-                          label={<User docRef={stat.docRef} />}
-                          value={stat.points}
-                        />
-                      ))}
-                    </Fragment>
-                  )}
                 </Fragment>
               )}
               {tab === 2 && (

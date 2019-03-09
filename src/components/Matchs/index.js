@@ -39,7 +39,7 @@ export function Matchs({ week = dayjs(new Date()).week() }) {
         {getTitleStats(currentWeek, week)}
       </Typography>
       <div style={{ margin: "10px" }}>
-        <MatchsStats matchs={matchs} />
+        <MatchsStats week={week} matchs={matchs} />
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitle(currentWeek, week)}

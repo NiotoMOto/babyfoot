@@ -39,7 +39,8 @@ function saveMatch(equipeBleue, equipeRouge) {
       victory: equipeRouge.score > equipeBleue.score
     },
     createdAt: firestore.FieldValue.serverTimestamp(),
-    week: dayjs(new Date()).week()
+    week: dayjs(new Date()).week(),
+    year: dayjs(new Date()).year()
   };
   return db.collection("matchs").add(matchData);
 }
