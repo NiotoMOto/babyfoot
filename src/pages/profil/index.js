@@ -3,6 +3,7 @@ import { db } from "../../firebaseConfig";
 import { Paper, Avatar, Typography } from "@material-ui/core";
 import { UserContext } from "../../App";
 import { ProfileStats } from "./ProfilStats";
+import { Badges } from "../../components/Badges";
 
 export function ProfilPage({ match }) {
   const userId = match.params.id;
@@ -45,10 +46,13 @@ export function ProfilPage({ match }) {
               </div>
               <div style={{ paddingTop: "30px" }}>
                 <Typography
-                  style={{ textAlign: "center", marginBottom: "20px" }}
+                  style={{ textAlign: "center", marginBottom: "5px" }}
                   variant="h6">
                   {user.displayName} {me.uid === user.uid ? "( vous )" : ""}
                 </Typography>
+                <div>
+                  <Badges wins={user.wins} />
+                </div>
                 {user.stats && me.stats && (
                   <ProfileStats user={user} currentUser={me} />
                 )}

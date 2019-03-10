@@ -9,7 +9,7 @@ import {
 import { db, extractData } from "../../firebaseConfig";
 import dayjs from "dayjs";
 
-function clodeWeek(week, stats, year) {
+function handleCloseWeek(week, stats, year) {
   return db.collection("weeks").add({ stats, week, year: dayjs().year() });
 }
 
@@ -17,24 +17,26 @@ export function CloseWeek({ year = dayjs().year(), week, stats }) {
   const [matchs, setMatchs] = useState([]);
   const [weekDb, setWeekDb] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  useEffect(() => {
-    db.collection("matchs")
-      .where("week", "==", week)
-      .orderBy("createdAt", "desc")
-      .get()
-      .then(doc => {
-        setMatchs(extractData(doc));
-      });
-    db.collection("weeks")
-      .where("week", "==", week)
-      .where("year", "==", year)
-      .onSnapshot(doc => {
-        console.log("doc", doc);
-        if (doc.docs.length) {
-          setWeekDb(extractData(doc)[0]);
-        }
-      });
-  }, []);
+  useEffect(
+    () => {
+      db.collection("matchs")
+        .where("week", "==", week)
+        .orderBy("createdAt", "desc")
+        .get()
+        .then(doc => {
+          setMatchs(extractData(doc));
+        });
+      db.collection("weeks")
+        .where("week", "==", week)
+        .where("year", "==", year)
+        .onSnapshot(doc => {
+          if (doc.docs.length) {
+            setWeekDb(extractData(doc)[0]);
+          }
+        });
+    },
+    [week]
+  );
   return (
     <UserContext.Consumer>
       {me => (
@@ -55,7 +57,9 @@ export function CloseWeek({ year = dayjs().year(), week, stats }) {
                   <Button onClick={() => setConfirmOpen(false)}>Non</Button>{" "}
                   <Button
                     onClick={() =>
-                      clodeWeek(week, stats).then(() => setConfirmOpen(false))
+                      handleCloseWeek(week, stats).then(() =>
+                        setConfirmOpen(false)
+                      )
                     }>
                     Oui
                   </Button>

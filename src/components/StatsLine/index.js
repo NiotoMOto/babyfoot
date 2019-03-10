@@ -11,8 +11,16 @@ function getColorDiff(diff, inverseColor) {
   return !inverseColor ? "red" : "green";
 }
 
-export function StatLine({ label, value, diff, inverseColor, displayDiff }) {
+export function StatLine({
+  label,
+  value,
+  diff,
+  inverseColor,
+  displayDiff,
+  valueStyle
+}) {
   const showDIsplayDiff = displayDiff;
+  console.log(valueStyle);
   return (
     <div
       style={{
@@ -27,7 +35,7 @@ export function StatLine({ label, value, diff, inverseColor, displayDiff }) {
           justifyContent: "space-between",
           marginBottom: "10px"
         }}>
-        <Chip color="primary" label={value} />
+        <Chip style={valueStyle} color="primary" label={value} />
         {showDIsplayDiff && (
           <div
             style={{

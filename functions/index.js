@@ -73,7 +73,7 @@ const labelPosition = {
 
 function storeWeeksStats(stats) {
   return Promise.all(
-    _.take(_.orderBy(stats, ["spoint"], ["desc"]), 3).map((stat, index) => {
+    _.take(_.orderBy(stats, ["points"], ["desc"]), 3).map((stat, index) => {
       return stat.docRef.get().then(user => {
         const userData = user.data();
         const fieldToUpdate = `wins.${labelPosition[index]}`;

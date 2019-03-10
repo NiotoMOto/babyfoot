@@ -10,6 +10,7 @@ import { StatLine } from "../StatsLine";
 import { CloseWeek } from "../CloseWeek";
 import { LeaderBoard } from "../LeaderBoard";
 import dayjs from "dayjs";
+import { LivePoints } from "./LivePoints";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
@@ -88,23 +89,30 @@ export function MatchsStats({ matchs, week, year = dayjs().year() }) {
     db.collection("points").onSnapshot(doc => {
       setPoints(extractData(doc)[0]);
     });
-    db.collection("weeks")
-      .where("week", "==", week)
-      .where("year", "==", year)
-      .onSnapshot(doc => {
-        console.log("doc stats", doc);
-        if (doc.docs.length) {
-          setWeekDb(extractData(doc)[0]);
-        }
-      });
   }, []);
+
+  useEffect(
+    () => {
+      db.collection("weeks")
+        .where("week", "==", week)
+        .where("year", "==", year)
+        .onSnapshot(doc => {
+          if (doc.docs.length) {
+            setWeekDb(extractData(doc)[0]);
+          } else {
+            setWeekDb(null);
+          }
+        });
+    },
+    [week, year]
+  );
 
   return (
     <div>
       {matchs && (
         <Fragment>
           <CloseWeek week={parseInt(week)} stats={stats} />
-          {weeksDb && <LeaderBoard />}
+
           <Paper square>
             <Tabs value={tab} onChange={handleChange}>
               <Tab label="Points" />
@@ -115,17 +123,8 @@ export function MatchsStats({ matchs, week, year = dayjs().year() }) {
             <div style={{ padding: "10px" }}>
               {tab === 0 && (
                 <Fragment>
-                  {points && (
-                    <Fragment>
-                      {orderBy(stats, ["points"], ["desc"]).map(stat => (
-                        <StatLine
-                          key={stat.docRef.id}
-                          label={<User docRef={stat.docRef} />}
-                          value={stat.points}
-                        />
-                      ))}
-                    </Fragment>
-                  )}
+                  {weeksDb && <LeaderBoard stats={weeksDb.stats} />}
+                  {points && !weeksDb && <LivePoints stats={stats} />}
                 </Fragment>
               )}
               {tab === 1 && (
