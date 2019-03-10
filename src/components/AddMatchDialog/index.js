@@ -56,6 +56,7 @@ function getUserAutocomplete(users, usedUsers) {
 
 export function AddMatchdialog({ open, handleClose }) {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [equipeBleue, setEquipeBleue] = useState({ members: [], score: 0 });
   const [equipeRouge, setEquipeRouge] = useState({ members: [], score: 0 });
   useEffect(() => {
@@ -86,9 +87,14 @@ export function AddMatchdialog({ open, handleClose }) {
           </Typography>
           <Button
             color="inherit"
-            onClick={() =>
-              saveMatch(equipeBleue, equipeRouge).then(() => handleClose())
-            }>
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              saveMatch(equipeBleue, equipeRouge)
+                .then(() => handleClose())
+                .then(() => setLoading(false))
+                .catch(() => setLoading(false));
+            }}>
             ajouter
           </Button>
         </Toolbar>
