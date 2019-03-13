@@ -20,7 +20,6 @@ export function StatLine({
   valueStyle
 }) {
   const showDIsplayDiff = displayDiff;
-  console.log(valueStyle);
   return (
     <div
       style={{

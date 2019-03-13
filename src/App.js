@@ -14,6 +14,7 @@ import { Loader } from "./components/Loader";
 import "semantic-ui-css/semantic.min.css";
 import { MatchsPage } from "./pages/Matchs";
 import { ProfilPage } from "./pages/profil";
+import { askForPermissioToReceiveNotifications } from "./pushNotification";
 
 export const UserContext = React.createContext();
 
@@ -91,6 +92,9 @@ function Routes({ me, noUser }) {
 
 export function App() {
   const [me, noUser] = useMe();
+  if (me) {
+    askForPermissioToReceiveNotifications(me);
+  }
   return (
     <UserContext.Provider value={me}>
       <Routes me={me} noUser={noUser} />

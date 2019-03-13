@@ -8,6 +8,7 @@
     "@material-ui/styles": "^3.0.0-alpha.10",
     "classnames": "^2.2.6",
     "dayjs": "^1.8.8",
+    "firebase-messaging": "^1.0.6",
     "firebaseui": "^3.5.2",
     "lodash": "^4.17.11",
     "react": "16.8.0-alpha.0",

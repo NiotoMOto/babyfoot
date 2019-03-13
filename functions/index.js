@@ -4,6 +4,15 @@ const _ = require("lodash");
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
+
+function extractData(querySnapshot) {
+  let d = [];
+
+  querySnapshot.forEach(doc => {
+    d.push(Object.assign(doc.data(), { id: doc.id }));
+  });
+  return d;
+}
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 
@@ -102,4 +111,80 @@ exports.addWins = functions.firestore
         return "Send OK";
       })
       .catch(err => err);
+  });
+
+function getMatchUsers(match) {
+  const equipes = {
+    equipeBleue: [],
+    equipeRouge: []
+  };
+  return Promise.all([
+    ...match.equipeBleue.members.map(userRefBleu => {
+      return userRefBleu.get().then(doc => {
+        const userBleu = doc.data();
+        equipes.equipeBleue.push(userBleu);
+        return userBleu;
+      });
+    }),
+    ...match.equipeRouge.members.map(userRefRouge => {
+      return userRefRouge.get().then(doc => {
+        const userRouge = doc.data();
+        equipes.equipeRouge.push(userRouge);
+        return userRefRouge;
+      });
+    })
+  ]).then(() => equipes);
+}
+
+exports.sendNotifs = functions.firestore
+  .document("matchs/{matchId}")
+  .onCreate(snap => {
+    let payload = {};
+    const match = snap.data();
+    return getMatchUsers(match)
+      .then(equipes => {
+        let body = "";
+        equipes.equipeBleue.forEach((user, index) => {
+          body += `${user.displayName}${
+            index < equipes.equipeBleue.length - 1 ? " - " : " "
+          }`;
+        });
+        body += `(${match.equipeBleue.score}) vs `;
+        equipes.equipeRouge.forEach((user, index) => {
+          body += `${user.displayName}${
+            index < equipes.equipeRouge.length - 1 ? " - " : " "
+          }`;
+        });
+        body += `(${match.equipeRouge.score})`;
+        payload = {
+          notification: {
+            title: "Nouveau match",
+            body,
+            click_action: "https://babyfoot-5ca0a.firebaseapp.com",
+            icon:
+              "https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwiXuveNp_rgAhUUgHMKHSfwAQ8QjRx6BAgBEAU&url=http%3A%2F%2Fwww.jeuxdesophia.com%2Fjcms%2Frda_6268%2Fen%2Ftable-football&psig=AOvVaw0Rw1-jIkryDVIZeS-I2cHD&ust=1552401149567633"
+          }
+        };
+        return payload;
+      })
+      .then(() => {
+        return db.collection("users").get();
+      })
+      .then(userDoc => extractData(userDoc))
+      .then(usersData =>
+        usersData
+          .map(userData => {
+            if (userData.pushTokens) {
+              return Promise.all(
+                userData.pushTokens.map(token =>
+                  admin.messaging().sendToDevice(token, payload)
+                )
+              );
+            }
+            return Promise.resolve([]);
+          })
+          .then(() => {
+            return "Sended ok";
+          })
+      );
   });

@@ -124,7 +124,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year() }) {
               {tab === 0 && (
                 <Fragment>
                   {weeksDb && <LeaderBoard stats={weeksDb.stats} />}
-                  {points && !weeksDb && <LivePoints stats={stats} />}
+                  {points && !weeksDb && points && <LivePoints stats={stats} />}
                 </Fragment>
               )}
               {tab === 1 && (
