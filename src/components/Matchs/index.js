@@ -23,6 +23,7 @@ function getTitleStats(currentWeek, week, year, currentYear) {
 export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
   const [openAddMatch, setOpenAddMatch] = useState(false);
   const [matchs, setMatchs] = useState([]);
+  const [points, setPoints] = useState(null);
   const currentWeek = dayjs().week();
   const currentYear = dayjs().year();
   useEffect(
@@ -39,6 +40,12 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
     },
     [week, year]
   );
+
+  useEffect(() => {
+    db.collection("points").onSnapshot(doc => {
+      setPoints(extractData(doc)[0]);
+    });
+  }, []);
   return (
     <div style={{ marginBottom: "90px", marginTop: "30px" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -60,7 +67,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
         {getTitleStats(currentWeek, week, year, currentYear)}
       </Typography>
       <div style={{ margin: "10px" }}>
-        <MatchsStats week={week} matchs={matchs} />
+        {points && <MatchsStats points={points} week={week} matchs={matchs} />}
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitle(currentWeek, week, year, currentYear)}

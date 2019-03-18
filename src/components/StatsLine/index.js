@@ -17,7 +17,8 @@ export function StatLine({
   diff,
   inverseColor,
   displayDiff,
-  valueStyle
+  valueStyle,
+  unit = ""
 }) {
   const showDIsplayDiff = displayDiff;
   return (
@@ -34,7 +35,7 @@ export function StatLine({
           justifyContent: "space-between",
           marginBottom: "10px"
         }}>
-        <Chip style={valueStyle} color="primary" label={value} />
+        <Chip style={valueStyle} color="primary" label={`${value} ${unit}`} />
         {showDIsplayDiff && (
           <div
             style={{
@@ -46,7 +47,7 @@ export function StatLine({
               color: getColorDiff(diff, inverseColor)
             }}>
             {diff > 0 ? "+" : ""}
-            {roundRation(diff)}
+            {roundRation(diff)} {unit}
           </div>
         )}
       </div>

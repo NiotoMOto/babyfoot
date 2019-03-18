@@ -33,11 +33,12 @@ export function ProfileStats({ currentUser, user }) {
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
-        label="victoire/defaites"
-        value={roundRation(user.stats.victories / user.stats.defeats)}
-        valueCurrentUser={roundRation(
-          currentUser.stats.victories / currentUser.stats.defeats
+        label="Taux victoires"
+        value={Math.round((user.stats.victories / user.stats.parties) * 100)}
+        valueCurrentUser={Math.round(
+          (currentUser.stats.victories / currentUser.stats.parties) * 100
         )}
+        unit="%"
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine

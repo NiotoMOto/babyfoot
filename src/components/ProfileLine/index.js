@@ -6,7 +6,8 @@ export function ProfileLine({
   value,
   valueCurrentUser,
   negativeData,
-  isCurrentUser
+  isCurrentUser,
+  unit
 }) {
   return (
     <StatLine
@@ -15,6 +16,7 @@ export function ProfileLine({
       diff={valueCurrentUser - value}
       inverseColor={negativeData}
       displayDiff={!isCurrentUser}
+      unit={unit}
     />
   );
 }

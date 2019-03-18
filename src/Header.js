@@ -8,17 +8,24 @@ import {
 } from "@material-ui/core";
 import { auth } from "./firebaseConfig";
 import { Link } from "react-router-dom";
-import MenuIcon from "@material-ui/icons/Menu";
+import KingOfBaby from "./assets/KingOfBaby.png";
 
 export function Header() {
-  const [menu, setMenu] = useState(false);
   return (
     <Fragment>
       <AppBar color="primary" position="relative">
         <Toolbar>
+          <Link to="/">
+            <img
+              height="40px"
+              style={{ marginRight: "10px" }}
+              src={KingOfBaby}
+              alt=""
+            />
+          </Link>
           <Typography style={{ color: "white", flexGrow: 1 }} variant="h5">
             <Link style={{ textDecoration: "none", color: "white" }} to="/">
-              Baby-foot
+              King of baby
             </Link>
           </Typography>
           <Button

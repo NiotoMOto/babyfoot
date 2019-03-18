@@ -75,21 +75,14 @@ function statsByUser(matchs, points) {
   }));
 }
 
-export function MatchsStats({ matchs, week, year = dayjs().year() }) {
+export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   const [tab, setTab] = useState(0);
-  const [points, setPoints] = useState(null);
   const [weeksDb, setWeekDb] = useState(null);
   const stats = statsByUser(matchs, points);
 
   function handleChange(event, newValue) {
     setTab(newValue);
   }
-
-  useEffect(() => {
-    db.collection("points").onSnapshot(doc => {
-      setPoints(extractData(doc)[0]);
-    });
-  }, []);
 
   useEffect(
     () => {
