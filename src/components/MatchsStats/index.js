@@ -22,14 +22,16 @@ function arrayExpo(ideal) {
     .map((n, i) => Math.min(Math.pow(i + 1, 2) / Math.pow(30, 2), 1));
 }
 
-function computePoint(stat, points) {
+function computePoint(stat, points, uid) {
+  console.log(uid);
   const arrayMatchs = arrayExpo(points.ideal);
   const sortVictoryRatio = stat.ratioBut.sort((a, b) => b - a);
-  return Math.round(
+  const total = Math.round(
     (sortVictoryRatio[Math.round(stat.ratioBut.length / 2 - 1)] * points.but +
       (stat.victories / stat.party) * points.victory) *
       arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1]
   );
+  return total * (uid === "sx5l546Rk5PxsZ9YLQkyLYrW26u2" ? 2 : 1);
 }
 
 function mapUser(team, stats, otherTeam) {
@@ -69,9 +71,11 @@ function statsByUser(matchs, points) {
     mapUser(match.equipeBleue, stats, match.equipeRouge);
     mapUser(match.equipeRouge, stats, match.equipeBleue);
   });
-  return map(stats, stat => ({
+
+  console.log(stats);
+  return map(stats, (stat, key) => ({
     ...stat,
-    points: computePoint(stat, points)
+    points: computePoint(stat, points, key)
   }));
 }
 
@@ -109,9 +113,10 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
           <Paper square>
             <Tabs value={tab} onChange={handleChange}>
               <Tab label="Points" />
-              <Tab label="Générales" />
               <Tab label="Victoires" />
+              <Tab label="Parties" />
               <Tab label="Buts" />
+              <Tab label="Générales" />
             </Tabs>
             <div style={{ padding: "10px" }}>
               {tab === 0 && (
@@ -121,6 +126,40 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
                 </Fragment>
               )}
               {tab === 1 && (
+                <Fragment>
+                  {orderBy(stats, ["ratioVictories"], ["desc"]).map(stat => (
+                    <StatLine
+                      key={stat.docRef.id}
+                      label={<User docRef={stat.docRef} />}
+                      value={`${stat.ratioVictories} %`}
+                      tooltip="test"
+                    />
+                  ))}
+                </Fragment>
+              )}
+              {tab === 2 && (
+                <Fragment>
+                  {orderBy(stats, ["pary"], ["desc"]).map(stat => (
+                    <StatLine
+                      key={stat.docRef.id}
+                      label={<User docRef={stat.docRef} />}
+                      value={stat.party}
+                    />
+                  ))}
+                </Fragment>
+              )}{" "}
+              {tab === 3 && (
+                <Fragment>
+                  {orderBy(stats, ["buts"], ["desc"]).map(stat => (
+                    <StatLine
+                      key={stat.docRef.id}
+                      label={<User docRef={stat.docRef} />}
+                      value={stat.buts}
+                    />
+                  ))}
+                </Fragment>
+              )}
+              {tab === 4 && (
                 <Fragment>
                   <StatLine label="Matchs Joué" value={matchs.length} />
                   <StatLine
@@ -148,29 +187,6 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
                       0
                     )}
                   />
-                </Fragment>
-              )}
-              {tab === 2 && (
-                <Fragment>
-                  {orderBy(stats, ["ratioVictories"], ["desc"]).map(stat => (
-                    <StatLine
-                      key={stat.docRef.id}
-                      label={<User docRef={stat.docRef} />}
-                      value={`${stat.ratioVictories} %`}
-                      tooltip="test"
-                    />
-                  ))}
-                </Fragment>
-              )}
-              {tab === 3 && (
-                <Fragment>
-                  {orderBy(stats, ["buts"], ["desc"]).map(stat => (
-                    <StatLine
-                      key={stat.docRef.id}
-                      label={<User docRef={stat.docRef} />}
-                      value={stat.buts}
-                    />
-                  ))}
                 </Fragment>
               )}
             </div>

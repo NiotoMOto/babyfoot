@@ -16,6 +16,7 @@ export const askForPermissioToReceiveNotifications = async user => {
           pushTokens: [...get(user, "pushTokens", []), ...[token]]
         });
     }
+    console.log(token);
     return token;
   } catch (error) {
     console.log(error);

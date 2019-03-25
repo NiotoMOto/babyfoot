@@ -161,8 +161,7 @@ exports.sendNotifs = functions.firestore
             title: "Nouveau match",
             body,
             click_action: "https://babyfoot-5ca0a.firebaseapp.com",
-            icon:
-              "https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwiXuveNp_rgAhUUgHMKHSfwAQ8QjRx6BAgBEAU&url=http%3A%2F%2Fwww.jeuxdesophia.com%2Fjcms%2Frda_6268%2Fen%2Ftable-football&psig=AOvVaw0Rw1-jIkryDVIZeS-I2cHD&ust=1552401149567633"
+            icon: "https://babyfoot-5ca0a.firebaseapp.com/KingOfBaby.png"
           }
         };
         return payload;
@@ -171,20 +170,47 @@ exports.sendNotifs = functions.firestore
         return db.collection("users").get();
       })
       .then(userDoc => extractData(userDoc))
-      .then(usersData =>
-        usersData
-          .map(userData => {
-            if (userData.pushTokens) {
-              return Promise.all(
-                userData.pushTokens.map(token =>
-                  admin.messaging().sendToDevice(token, payload)
-                )
-              );
-            }
-            return Promise.resolve([]);
-          })
-          .then(() => {
-            return "Sended ok";
-          })
-      );
+      .then(usersDatas =>
+        usersDatas.map(userData => {
+          if (userData.pushTokens) {
+            return Promise.all(
+              userData.pushTokens.map(token =>
+                admin
+                  .messaging()
+                  .sendToDevice(token, payload)
+                  .then(response => cleanupTokens(response, token, userData))
+              )
+            );
+          }
+          return Promise.resolve([]);
+        })
+      )
+      .then(() => {
+        return "Sended ok";
+      });
   });
+
+function cleanupTokens(response, token, userData) {
+  // For each notification we check if there was an error.
+  const tokensDelete = [];
+  response.results.forEach((result, index) => {
+    const error = result.error;
+    if (error) {
+      console.error("Failure sending notification to", token, error);
+      // Cleanup the tokens who are not registered anymore.
+      if (
+        error.code === "messaging/invalid-registration-token" ||
+        error.code === "messaging/registration-token-not-registered"
+      ) {
+        const deleteTask = db
+          .collection("users")
+          .doc(userData.uid)
+          .update({
+            pushTokens: admin.firestore.FieldValue.arrayRemove(token)
+          });
+        tokensDelete.push(deleteTask);
+      }
+    }
+  });
+  return Promise.all(tokensDelete);
+}
