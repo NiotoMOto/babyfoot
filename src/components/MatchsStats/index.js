@@ -23,7 +23,6 @@ function arrayExpo(ideal) {
 }
 
 function computePoint(stat, points, uid) {
-  console.log(uid);
   const arrayMatchs = arrayExpo(points.ideal);
   const sortVictoryRatio = stat.ratioBut.sort((a, b) => b - a);
   const total = Math.round(
@@ -72,7 +71,6 @@ function statsByUser(matchs, points) {
     mapUser(match.equipeRouge, stats, match.equipeBleue);
   });
 
-  console.log(stats);
   return map(stats, (stat, key) => ({
     ...stat,
     points: computePoint(stat, points, key)

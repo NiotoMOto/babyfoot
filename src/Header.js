@@ -73,7 +73,6 @@ function Menu() {
                   await askForPermissioToReceiveNotifications(me);
                   setNotifDone(true);
                 } catch (e) {}
-                console.log("token ok");
               }}>
               <ListItemIcon>
                 <InboxIcon />

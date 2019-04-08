@@ -50,17 +50,21 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
     <div style={{ marginBottom: "90px", marginTop: "30px" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         {week - 1 > 0 && (
-          <Button disabled={week - 1 <= 0}>
-            <ChevronLeft color="primary" />
-            <Link to={`/matchs/${week - 1}`}>Semaine {week - 1}</Link>
-          </Button>
+          <Link to={`/matchs/${week - 1}`}>
+            <Button disabled={week - 1 <= 0}>
+              <ChevronLeft color="primary" />
+              Semaine {week - 1}
+            </Button>
+          </Link>
         )}
         {week - 1 <= 0 && <div />}
         {week !== currentWeek && (
-          <Button disabled={week === currentWeek}>
-            <Link to={`/matchs/${week + 1}`}>Semaine {week + 1} </Link>
-            <ChevronRight color="primary" />
-          </Button>
+          <Link to={`/matchs/${week + 1}`}>
+            <Button disabled={week === currentWeek}>
+              Semaine {week + 1}
+              <ChevronRight color="primary" />
+            </Button>
+          </Link>
         )}
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
