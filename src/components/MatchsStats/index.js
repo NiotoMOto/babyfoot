@@ -24,14 +24,21 @@ function arrayExpo(ideal) {
 
 function computePoint(stat, points, uid) {
   const arrayMatchs = arrayExpo(points.ideal);
-  const sortVictoryRatio = stat.ratioBut.sort((a, b) => b - a);
-  const total = Math.round(
-    (sortVictoryRatio[Math.round(stat.ratioBut.length / 2 - 1)] * points.but +
+  const ratioButMoyenne =
+    reduce(stat.ratioBut, (sum, n) => sum + n, 0) / stat.ratioBut.length;
+  stat.docRef.get().then(doc => {
+    console.log(doc.data().displayName);
+    console.log(ratioButMoyenne);
+  });
+
+  return Math.round(
+    (ratioButMoyenne * points.but +
       (stat.victories / stat.party) * points.victory) *
       arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1]
   );
-  return total * (uid === "sx5l546Rk5PxsZ9YLQkyLYrW26u2" ? 2 : 1);
 }
+
+const toFive = (num, max) => (num / max) * 5;
 
 function mapUser(team, stats, otherTeam) {
   const maxBut = Math.max(team.score, otherTeam.score);
@@ -40,6 +47,7 @@ function mapUser(team, stats, otherTeam) {
       get(stats[member.id], "victories", 0),
       team.victory ? 1 : 0
     );
+
     const parties = calculate(get(stats[member.id], "party", 0), 1);
     stats[member.id] = {
       ...stats[member.id],
@@ -49,7 +57,7 @@ function mapUser(team, stats, otherTeam) {
         team.victory ? 1 : 0
       ),
       ratioBut: get(stats[member.id], "ratioBut", []).concat(
-        team.score / maxBut
+        toFive(team.score, maxBut) / (toFive(otherTeam.score, maxBut) || 1)
       ),
       defaites: calculate(
         get(stats[member.id], "defaites", 0),
@@ -80,6 +88,7 @@ function statsByUser(matchs, points) {
 export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   const [tab, setTab] = useState(0);
   const [weeksDb, setWeekDb] = useState(null);
+  const [weeksDbLoaded, setWeeksDbLoaded] = useState(false);
   const stats = statsByUser(matchs, points);
 
   function handleChange(event, newValue) {
@@ -88,16 +97,21 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
 
   useEffect(
     () => {
+      setWeeksDbLoaded(false);
       db.collection("weeks")
         .where("week", "==", week)
         .where("year", "==", year)
-        .onSnapshot(doc => {
-          if (doc.docs.length) {
-            setWeekDb(extractData(doc)[0]);
-          } else {
-            setWeekDb(null);
-          }
-        });
+        .onSnapshot(
+          doc => {
+            if (doc.docs.length) {
+              setWeekDb(extractData(doc)[0]);
+            } else {
+              setWeekDb(null);
+            }
+            setWeeksDbLoaded(true);
+          },
+          () => setWeeksDbLoaded(true)
+        );
     },
     [week, year]
   );
@@ -120,7 +134,9 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
               {tab === 0 && (
                 <Fragment>
                   {weeksDb && <LeaderBoard stats={weeksDb.stats} />}
-                  {points && !weeksDb && points && <LivePoints stats={stats} />}
+                  {points && weeksDbLoaded && !weeksDb && points && (
+                    <LivePoints stats={stats} />
+                  )}
                 </Fragment>
               )}
               {tab === 1 && (
