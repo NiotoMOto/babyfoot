@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { AddMatchButton } from "../../components/AddMatchButton";
-import { AddMatchdialog } from "../../components/AddMatchDialog";
-import { db, extractData } from "../../firebaseConfig";
-import { Match } from "../../components/Match";
+import { AddMatchButton } from "./AddMatchButton";
+import { AddMatchdialog } from "./AddMatchDialog";
+import { db, extractData } from "../firebaseConfig";
+import { Match } from "./Match";
 import dayjs from "dayjs";
 import { Typography, Button } from "@material-ui/core";
-import { MatchsStats } from "../MatchsStats";
+import { MatchsStats } from "./MatchsStats";
 import { Link } from "react-router-dom";
 import { ChevronRight, ChevronLeft } from "@material-ui/icons";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { StatLine } from "../StatsLine";
+import { StatLine } from "./StatsLine";
 
 export function ProfileLine({
   label,

@@ -1,7 +1,7 @@
 import React from "react";
 import orderBy from "lodash/orderBy";
-import { User } from "../User";
-import { StatLine } from "../StatsLine";
+import { User } from "./User";
+import { StatLine } from "./StatsLine";
 import { type } from "os";
 import { Typography } from "@material-ui/core";
 

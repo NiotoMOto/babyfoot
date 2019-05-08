@@ -1,5 +1,5 @@
 import React from "react";
-import { Team } from "../Team";
+import { Team } from "./Team";
 import { Avatar, Paper, Divider } from "@material-ui/core";
 
 const teamStyle = {

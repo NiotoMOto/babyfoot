@@ -1,5 +1,5 @@
 import React from "react";
-import { variantStylesLeads } from "../../constants";
+import { variantStylesLeads } from "../constants";
 
 function Badge({ label, style }) {
   return (

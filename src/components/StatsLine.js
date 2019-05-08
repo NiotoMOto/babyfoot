@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, Chip } from "@material-ui/core";
-import { roundRation } from "../../utils";
+import { roundRation } from "../utils";
 
 function getColorDiff(diff, inverseColor) {
   if (diff === 0) {

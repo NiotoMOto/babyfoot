@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import orderBy from "lodash/orderBy";
-import { StatLine } from "../StatsLine";
-import { User } from "../User";
+import { StatLine } from "./StatsLine";
+import { User } from "./User";
 
 export function LivePoints({ stats }) {
   return (

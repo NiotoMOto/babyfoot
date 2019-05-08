@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Chip, Avatar } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { Badges } from "../Badges";
-import { variantStylesLeads } from "../../constants";
+import { Badges } from "./Badges";
+import { variantStylesLeads } from "../constants";
 
 export function User({ docRef, variant }) {
   const [user, setUser] = useState(null);

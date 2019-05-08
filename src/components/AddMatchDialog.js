@@ -12,8 +12,8 @@ import {
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
-import { AutoComplete } from "../AutoComplete";
-import { db, extractData } from "../../firebaseConfig";
+import { AutoComplete } from "./AutoComplete";
+import { db, extractData } from "../firebaseConfig";
 import { firestore } from "firebase/app";
 
 function Transition(props) {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { UserContext } from "../../App";
+import { UserContext } from "../App";
 import {
   Button,
   Dialog,
   DialogContent,
   DialogActions
 } from "@material-ui/core";
-import { db, extractData } from "../../firebaseConfig";
+import { db, extractData } from "../firebaseConfig";
 import dayjs from "dayjs";
 
 function handleCloseWeek(week, stats, year) {

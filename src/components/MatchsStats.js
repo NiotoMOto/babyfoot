@@ -4,11 +4,11 @@ import { Paper, Tabs, Tab } from "@material-ui/core";
 import get from "lodash/get";
 import map from "lodash/map";
 import orderBy from "lodash/orderBy";
-import { User } from "../User";
-import { db, extractData } from "../../firebaseConfig";
-import { StatLine } from "../StatsLine";
-import { CloseWeek } from "../CloseWeek";
-import { LeaderBoard } from "../LeaderBoard";
+import { User } from "./User";
+import { db, extractData } from "../firebaseConfig";
+import { StatLine } from "./StatsLine";
+import { CloseWeek } from "./CloseWeek";
+import { LeaderBoard } from "./LeaderBoard";
 import dayjs from "dayjs";
 import { LivePoints } from "./LivePoints";
 
