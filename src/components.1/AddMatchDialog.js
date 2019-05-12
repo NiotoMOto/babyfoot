@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import indigo from "@material-ui/core/colors/indigo";
-import red from "@material-ui/core/colors/red";
-import { makeStyles } from "@material-ui/styles";
-
 import {
   Dialog,
   Slide,
@@ -11,8 +7,11 @@ import {
   Toolbar,
   IconButton,
   Button,
-  Fab,
-  Switch
+  Card,
+  CardContent,
+  Avatar,
+  Chip,
+  Fab
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
@@ -21,35 +20,10 @@ import { firestore } from "firebase/app";
 import { AddMatchTeam } from "./AddMatchTeam";
 import { AddMatchScore } from "./AddMatchScore";
 import AddIcon from "@material-ui/icons/Save";
-import { AddMatchRecap } from "./AddMatchRecap";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
-
-const useStyles = makeStyles(theme => ({
-  colorSwitchBase: {
-    color: indigo[500],
-    "& + $colorBar": {
-      backgroundColor: indigo[500]
-    },
-    "&$colorChecked": {
-      color: indigo[500],
-      "& + $colorBar": {
-        backgroundColor: indigo[500]
-      }
-    }
-  },
-  colorChecked: {
-    color: red[300],
-    "&$colorChecked": {
-      color: red[900],
-      "& + $colorBar": {
-        backgroundColor: red[900]
-      }
-    }
-  }
-}));
 
 function saveMatch(equipeBleue, equipeRouge) {
   const matchData = {
@@ -76,7 +50,7 @@ function saveMatch(equipeBleue, equipeRouge) {
   return db.collection("matchs").add(matchData);
 }
 
-function getUserAutocomplete(users, usedUsers, classes) {
+function getUserAutocomplete(users, usedUsers) {
   return users
     .filter(user => !usedUsers.map(u => u.value).includes(user.id))
     .map(user => ({
@@ -86,7 +60,6 @@ function getUserAutocomplete(users, usedUsers, classes) {
 }
 
 export function AddMatchdialog({ open, handleClose }) {
-  const classes = useStyles();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [equipeBleue, setEquipeBleue] = useState({ members: [], score: 0 });
@@ -96,12 +69,7 @@ export function AddMatchdialog({ open, handleClose }) {
     setLoading(true);
     saveMatch(equipeBleue, equipeRouge)
       .then(() => handleClose())
-      .then(() => {
-        setLoading(false);
-        setEquipeBleue({ members: [], score: 0 });
-        setEquipeRouge({ members: [], score: 0 });
-        selectedTeam("bleu");
-      })
+      .then(() => setLoading(false))
       .catch(() => setLoading(false));
   };
   useEffect(() => {
@@ -112,13 +80,6 @@ export function AddMatchdialog({ open, handleClose }) {
         setUsers(extractData(doc));
       });
   }, []);
-
-  const toggleTeam = () => {
-    if (selectedTeam === "bleu") {
-      return setSelectedTeam("rouge");
-    }
-    return setSelectedTeam("bleu");
-  };
 
   return (
     <Dialog
@@ -134,29 +95,25 @@ export function AddMatchdialog({ open, handleClose }) {
           <Typography variant="h6" color="inherit" style={{ flex: 1 }}>
             Match
           </Typography>
+          <Button
+            color="inherit"
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              saveMatch(equipeBleue, equipeRouge)
+                .then(() => handleClose())
+                .then(() => setLoading(false))
+                .catch(() => setLoading(false));
+            }}>
+            ajouter
+          </Button>
         </Toolbar>
       </AppBar>
-      <div style={{ width: "100%", textAlign: "center" }}>
-        <Typography variant="subtitle2" color="textPrimary">
-          Equipe Bleue
-        </Typography>{" "}
-        <Switch
-          onClick={toggleTeam}
-          checked={selectedTeam === "rouge"}
-          classes={{
-            switchBase: classes.colorSwitchBase,
-            checked: classes.colorChecked
-          }}
-        />{" "}
-        <Typography variant="subtitle2" color="textPrimary">
-          Equipe Rouge
-        </Typography>
-      </div>
+
       {selectedTeam === "bleu" && (
         <React.Fragment>
           <AddMatchTeam
             equipe={equipeBleue}
-            otherEquipe={equipeRouge}
             setEquipe={setEquipeBleue}
             users={users}
             color="bleu"
@@ -174,7 +131,6 @@ export function AddMatchdialog({ open, handleClose }) {
         <React.Fragment>
           <AddMatchTeam
             equipe={equipeRouge}
-            otherEquipe={equipeBleue}
             setEquipe={setEquipeRouge}
             users={users}
             color="rouge"
@@ -189,13 +145,40 @@ export function AddMatchdialog({ open, handleClose }) {
         </React.Fragment>
       )}
       <div style={{ margin: "15px", position: "relative" }}>
-        <AddMatchRecap
-          color="bleu"
-          equipe={equipeBleue}
-          setEquipe={setEquipeBleue}
-          setSelectedTeam={setSelectedTeam}
-          styles={{ paddingBottom: "35px" }}
-        />
+        <Card
+          style={{ background: "#3f51b5" }}
+          onClick={() => setSelectedTeam("bleu")}>
+          <CardContent style={{ paddingBottom: "43px" }}>
+            <div>
+              {equipeBleue.members.map(member => (
+                <div
+                  key={member.value}
+                  style={{ margin: "5px", display: "inline-block" }}>
+                  <Chip
+                    style={{ fontSize: "10px" }}
+                    avatar={<Avatar alt="" src={member.photoURL} />}
+                    label={
+                      <div style={{ display: "flex" }}>
+                        {member.displayName}
+                      </div>
+                    }
+                    onClick={() =>
+                      setEquipeBleue({
+                        ...equipeBleue,
+                        members: equipeBleue.members.filter(
+                          m => m.value !== member.value
+                        )
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+            <h3 style={{ textAlign: "center", color: "white" }}>
+              {equipeBleue.score}
+            </h3>
+          </CardContent>
+        </Card>
         <div
           style={{
             position: "absolute",
@@ -204,17 +187,42 @@ export function AddMatchdialog({ open, handleClose }) {
             display: "flex",
             justifyContent: "center"
           }}>
-          <Fab onClick={onClickSave} disabled={loading}>
+          <Fab style={{ background: "green" }} onClick={onClickSave}>
             <AddIcon />
           </Fab>
         </div>
-        <AddMatchRecap
-          color="rouge"
-          equipe={equipeRouge}
-          setEquipe={equipeBleue}
-          setSelectedTeam={setSelectedTeam}
-          styles={{ paddingTop: "35px" }}
-        />
+        <Card
+          style={{ background: "#f51464" }}
+          onClick={() => setSelectedTeam("rouge")}>
+          <CardContent style={{ paddingTop: "43px" }}>
+            <div>
+              {equipeRouge.members.map(member => (
+                <div style={{ margin: "5px", display: "inline-block" }}>
+                  <Chip
+                    style={{ fontSize: "10px" }}
+                    avatar={<Avatar alt="" src={member.photoURL} />}
+                    label={
+                      <div style={{ display: "flex" }}>
+                        {member.displayName}
+                      </div>
+                    }
+                    onClick={() =>
+                      setEquipeRouge({
+                        ...equipeRouge,
+                        members: equipeRouge.members.filter(
+                          m => m.value !== member.value
+                        )
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+            <h3 style={{ textAlign: "center", color: "white" }}>
+              {equipeRouge.score}
+            </h3>
+          </CardContent>
+        </Card>
       </div>
     </Dialog>
   );
