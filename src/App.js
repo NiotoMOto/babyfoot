@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useContext } from "react";
 import "./App.css";
 import {
   Switch,
@@ -14,9 +14,12 @@ import { Loader } from "./components/Loader";
 import "semantic-ui-css/semantic.min.css";
 import { MatchsPage } from "./pages/Matchs";
 import { ProfilPage } from "./pages/profil";
+import { DefiPage } from "./pages/Defi";
 import { askForPermissioToReceiveNotifications } from "./pushNotification";
 
 export const UserContext = React.createContext();
+
+export const useUserContext = () => useContext(UserContext);
 
 const withAuth = user => Component => props =>
   user ? <Component {...props} /> : <Redirect to="/login" />;
@@ -81,6 +84,11 @@ function Routes({ me, noUser }) {
                 exact
                 path="/profil/:id"
                 component={withAuthUser(ProfilPage)}
+              />
+              <DefaultLayout
+                exact
+                path="/defi"
+                component={withAuthUser(DefiPage)}
               />
             </>
           )}

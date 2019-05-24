@@ -26,15 +26,12 @@ function computePoint(stat, points, uid) {
   const arrayMatchs = arrayExpo(points.ideal);
   const ratioButMoyenne =
     reduce(stat.ratioBut, (sum, n) => sum + n, 0) / stat.ratioBut.length;
-  stat.docRef.get().then(doc => {
-    console.log(doc.data().displayName);
-    console.log(ratioButMoyenne);
-  });
-
+  console.log(ratioButMoyenne, stat.victories);
   return Math.round(
     (ratioButMoyenne * points.but +
       (stat.victories / stat.party) * points.victory) *
-      arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1]
+      arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1] +
+      stat.defis
   );
 }
 
@@ -49,16 +46,28 @@ function mapUser(team, stats, otherTeam) {
     );
 
     const parties = calculate(get(stats[member.id], "party", 0), 1);
+    const defiPoints = get(
+      get(team, "defisPoints", []).find(d => d && d.id === member.id),
+      "points",
+      0
+    );
     stats[member.id] = {
       ...stats[member.id],
       docRef: member,
+      defis: calculate(
+        get(stats[member.id], "defis", 0),
+        team.victory ? defiPoints : -defiPoints
+      ),
       victories: calculate(
         get(stats[member.id], "victories", 0),
         team.victory ? 1 : 0
       ),
-      ratioBut: get(stats[member.id], "ratioBut", []).concat(
-        toFive(team.score, maxBut) / (toFive(otherTeam.score, maxBut) || 1)
-      ),
+      ratioBut: team.victory
+        ? get(stats[member.id], "ratioBut", []).concat(
+            toFive(team.score, maxBut) ||
+              1 / (toFive(otherTeam.score, maxBut) || 1)
+          )
+        : get(stats[member.id], "ratioBut", [1]),
       defaites: calculate(
         get(stats[member.id], "defaites", 0),
         otherTeam.victory ? 1 : 0

@@ -4,10 +4,10 @@ import { AddMatchdialog } from "./AddMatchDialog";
 import { db, extractData } from "../firebaseConfig";
 import { Match } from "./Match";
 import dayjs from "dayjs";
-import { Typography, Button } from "@material-ui/core";
+import { Typography, Button, Fab } from "@material-ui/core";
 import { MatchsStats } from "./MatchsStats";
 import { Link } from "react-router-dom";
-import { ChevronRight, ChevronLeft } from "@material-ui/icons";
+import { ChevronRight, ChevronLeft, FitnessCenter } from "@material-ui/icons";
 
 function getTitle(currentWeek, week, year, currentYear) {
   return currentWeek === week && year === currentYear
@@ -66,6 +66,17 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
             </Button>
           </Link>
         )}
+      </div>
+      <div style={{ margin: "10px" }}>
+        <Link to="/defi">
+          <Fab
+            size="small"
+            color="primary"
+            variant="extended"
+            aria-label="Delete">
+            <FitnessCenter /> Défis
+          </Fab>
+        </Link>
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitleStats(currentWeek, week, year, currentYear)}

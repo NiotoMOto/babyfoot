@@ -2,6 +2,7 @@ import React from "react";
 import find from "lodash/find";
 import orderBy from "lodash/orderBy";
 import { Chip, Avatar } from "@material-ui/core";
+import { UserButton } from "./UserButton";
 
 export const AddMatchTeam = ({
   equipe,
@@ -38,9 +39,8 @@ export const AddMatchTeam = ({
     <div style={{ padding: "0 8px" }}>
       <div style={{ marginBottom: "20px" }}>
         {orderBy(users, "displayName").map(user => (
-          <div style={{ margin: "5px", display: "inline-block" }}>
-            <Chip
-              style={{ fontSize: "10px" }}
+          <div key={user.id} style={{ margin: "5px", display: "inline-block" }}>
+            <UserButton
               variant={
                 [...equipe.members, ...otherEquipe.members].find(
                   member => member.value === user.id
@@ -49,11 +49,11 @@ export const AddMatchTeam = ({
                   : "outlined"
               }
               color={isInOtherEquipe(user) ? "default" : muiColor}
-              avatar={<Avatar alt="" src={user.photoURL} />}
-              label={<div style={{ display: "flex" }}>{user.displayName}</div>}
+              photoURL={user.photoURL}
               onClick={() =>
                 !isInOtherEquipe(user) ? onClickUser(user) : null
               }
+              label={user.displayName}
             />
           </div>
         ))}

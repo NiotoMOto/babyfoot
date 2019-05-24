@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import dayjs from "dayjs";
 import indigo from "@material-ui/core/colors/indigo";
+import flatten from "lodash/flatten";
 import red from "@material-ui/core/colors/red";
+import { User } from "./User";
 import { makeStyles } from "@material-ui/styles";
+import purple from "@material-ui/core/colors/purple";
+import groupBy from "lodash/groupBy";
+import merge from "lodash/merge";
+import uniqBy from "lodash/uniqBy";
 
 import {
   Dialog,
@@ -10,9 +16,9 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Button,
   Fab,
-  Switch
+  Switch,
+  Avatar
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
@@ -27,6 +33,16 @@ import { LoaderInline } from "./LoaderInline";
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
+
+const getDefis = (member, who) =>
+  db
+    .collection("defis")
+    .where(who, "==", member)
+    .where("winner", "==", null)
+    .where("week", "==", dayjs().week())
+    .where("year", "==", dayjs().year())
+    .orderBy("createdAt", "desc")
+    .get();
 
 const useStyles = makeStyles(theme => ({
   colorSwitchBase: {
@@ -52,7 +68,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function saveMatch(equipeBleue, equipeRouge) {
+function saveMatch(equipeBleue, equipeRouge, defis) {
+  const idBlues = equipeBleue.members.map(em => em.value);
+  const idRouge = equipeRouge.members.map(er => er.value);
   const matchData = {
     equipeBleue: {
       ...equipeBleue,
@@ -60,7 +78,12 @@ function saveMatch(equipeBleue, equipeRouge) {
       members: equipeBleue.members.map(m =>
         db.collection("users").doc(m.value)
       ),
-      victory: equipeBleue.score > equipeRouge.score
+      victory: equipeBleue.score > equipeRouge.score,
+      defisPoints: idBlues.map(id =>
+        defis[id]
+          ? { id, points: defis[id].reduce((sum, d) => sum + d.points, 0) }
+          : null
+      )
     },
     equipeRouge: {
       ...equipeRouge,
@@ -68,13 +91,52 @@ function saveMatch(equipeBleue, equipeRouge) {
       members: equipeRouge.members.map(m =>
         db.collection("users").doc(m.value)
       ),
-      victory: equipeRouge.score > equipeBleue.score
+      victory: equipeRouge.score > equipeBleue.score,
+      defisPoints: idRouge.map(id =>
+        defis[id]
+          ? { id, points: defis[id].reduce((sum, d) => sum + d.points, 0) }
+          : null
+      )
     },
     createdAt: firestore.FieldValue.serverTimestamp(),
     week: dayjs(new Date()).week(),
     year: dayjs(new Date()).year()
   };
-  return db.collection("matchs").add(matchData);
+  return db
+    .collection("matchs")
+    .add(matchData)
+    .then(() => {
+      return Promise.all([
+        ...flatten(
+          idBlues.map(id =>
+            defis[id] && equipeBleue.score > equipeRouge.score
+              ? defis[id].map(d =>
+                  db
+                    .collection("defis")
+                    .doc(d.id)
+                    .update({
+                      winner: db.collection("users").doc(id)
+                    })
+                )
+              : Promise.resolve()
+          )
+        ),
+        ...flatten(
+          idRouge.map(id =>
+            defis[id] && equipeRouge.score > equipeBleue.score
+              ? defis[id].map(d =>
+                  db
+                    .collection("defis")
+                    .doc(d.id)
+                    .update({
+                      winner: db.collection("users").doc(id)
+                    })
+                )
+              : Promise.resolve()
+          )
+        )
+      ]);
+    });
 }
 
 function getUserAutocomplete(users, usedUsers, classes) {
@@ -92,10 +154,11 @@ export function AddMatchdialog({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
   const [equipeBleue, setEquipeBleue] = useState({ members: [], score: 0 });
   const [equipeRouge, setEquipeRouge] = useState({ members: [], score: 0 });
+  const [defis, setDefis] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("bleu");
   const onClickSave = () => {
     setLoading(true);
-    saveMatch(equipeBleue, equipeRouge)
+    saveMatch(equipeBleue, equipeRouge, defiPoints)
       .then(() => handleClose())
       .then(() => {
         setLoading(false);
@@ -120,6 +183,39 @@ export function AddMatchdialog({ open, handleClose }) {
     }
     return setSelectedTeam("bleu");
   };
+
+  useEffect(
+    () => {
+      const members = [...equipeBleue.members, ...equipeRouge.members].map(
+        member => db.collection("users").doc(member.value)
+      );
+      Promise.all(
+        flatten(
+          members.map(member => [
+            getDefis(member, "requester"),
+            getDefis(member, "sendingTo")
+          ])
+        )
+      ).then(results =>
+        setDefis(uniqBy(flatten(results.map(res => extractData(res))), "id"))
+      );
+    },
+    [equipeBleue.members, equipeRouge.members]
+  );
+  const matchDefis = defis.filter(d => {
+    const idBlues = equipeBleue.members.map(em => em.value);
+    const idRouge = equipeRouge.members.map(er => er.value);
+    const isOnWay =
+      idBlues.includes(d.requester.id) && idRouge.includes(d.sendingTo.id);
+    const isOnOtherWay =
+      idBlues.includes(d.sendingTo.id) && idRouge.includes(d.requester.id);
+    return isOnWay || isOnOtherWay;
+  });
+
+  const defiPoints = merge(
+    groupBy(matchDefis, "requester.id"),
+    groupBy(matchDefis, "sendingTo.id")
+  );
 
   return (
     <Dialog
@@ -197,8 +293,10 @@ export function AddMatchdialog({ open, handleClose }) {
         <AddMatchRecap
           color="bleu"
           equipe={equipeBleue}
+          otherEquipe={equipeRouge}
           setEquipe={setEquipeBleue}
           setSelectedTeam={setSelectedTeam}
+          defiPoints={defiPoints}
           styles={{ paddingBottom: "35px" }}
         />
         <div
@@ -210,7 +308,7 @@ export function AddMatchdialog({ open, handleClose }) {
             justifyContent: "center"
           }}>
           <Fab
-            style={{ color: "white", background: loading ? "grey" : "black" }}
+            style={{ color: "white", background: "black" }}
             onClick={onClickSave}
             disabled={loading}>
             {loading && <LoaderInline />}
@@ -220,10 +318,35 @@ export function AddMatchdialog({ open, handleClose }) {
         <AddMatchRecap
           color="rouge"
           equipe={equipeRouge}
+          otherEquipe={equipeBleue}
           setEquipe={equipeBleue}
           setSelectedTeam={setSelectedTeam}
+          defiPoints={defiPoints}
           styles={{ paddingTop: "35px" }}
         />
+        <div>
+          {matchDefis.length > 0 && (
+            <Typography style={{ textAlign: "center" }} variant="headline">
+              Defis
+            </Typography>
+          )}
+          {matchDefis.map(md => (
+            <div
+              style={{
+                display: "flex",
+                padding: "10px",
+                alignItems: "center"
+              }}>
+              <div>
+                <User docRef={md.requester} />
+                <User docRef={md.sendingTo} />
+              </div>
+              <div>
+                <Avatar style={{ background: purple[500] }}>{md.points}</Avatar>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </Dialog>
   );

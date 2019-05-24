@@ -1,10 +1,20 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Chip, Avatar, CardContent } from "@material-ui/core";
+import groupBy from "lodash/groupBy";
+import merge from "lodash/merge";
+import purple from "@material-ui/core/colors/purple";
 
-export const AddMatchRecap = ({ equipe, setSelectedTeam, color, styles }) => {
+export const AddMatchRecap = ({
+  equipe,
+  otherEquipe,
+  setSelectedTeam,
+  color,
+  styles,
+  defiPoints
+}) => {
   const sytleColor =
     color === "bleu" ? "rgba(63, 81, 181, 1)" : "rgb(245, 7, 92)";
-  console.log(equipe.members);
+
   return (
     <div
       style={{ borderColor: sytleColor }}
@@ -21,6 +31,29 @@ export const AddMatchRecap = ({ equipe, setSelectedTeam, color, styles }) => {
                     <div style={{ display: "flex" }}>{member.displayName}</div>
                   }
                 />
+                {defiPoints[member.value] && (
+                  <span
+                    style={{
+                      color: purple[500],
+                      display: "inline-block",
+                      marginLeft: "15px",
+                      fontWeight: "bold"
+                    }}>
+                    {equipe.score !== otherEquipe.score && (
+                      <Fragment>
+                        <span>
+                          {equipe.score > otherEquipe.score ? "+" : "-"}{" "}
+                        </span>
+                        <span>
+                          {defiPoints[member.value].reduce(
+                            (sum, d) => sum + d.points,
+                            0
+                          )}
+                        </span>
+                      </Fragment>
+                    )}
+                  </span>
+                )}
               </div>
             ))}
           </div>

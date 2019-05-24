@@ -17,7 +17,11 @@ export function Match({ match }) {
       <div style={{ display: "flex", flexDirection: "column", margin: "10px" }}>
         <Paper>
           <div style={teamStyle}>
-            <Team members={match.equipeRouge.members} />
+            <Team
+              members={match.equipeRouge.members}
+              defisPoints={match.equipeRouge.defisPoints}
+              victory={match.equipeRouge.victory}
+            />
             <Avatar style={{ background: "rgb(245, 7, 92)" }}>
               {match.equipeRouge.score}
             </Avatar>
@@ -28,7 +32,11 @@ export function Match({ match }) {
           </span>
           <Divider />
           <div style={teamStyle}>
-            <Team members={match.equipeBleue.members} />
+            <Team
+              members={match.equipeBleue.members}
+              defisPoints={match.equipeBleue.defisPoints}
+              victory={match.equipeBleue.victory}
+            />
             <div>
               <Avatar style={{ background: "rgba(63, 81, 181, 1)" }}>
                 {match.equipeBleue.score}

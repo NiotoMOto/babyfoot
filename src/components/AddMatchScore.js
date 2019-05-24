@@ -31,6 +31,7 @@ export const AddMatchScore = ({ equipe, setEquipe, color, maxScore = 5 }) => {
         </Avatar>
         {scoreArray.map(number => (
           <Avatar
+            key={number}
             onClick={() => setScore(number + 1)}
             style={{
               background: equipe.score === number + 1 ? sytleColor : "",
@@ -38,12 +39,6 @@ export const AddMatchScore = ({ equipe, setEquipe, color, maxScore = 5 }) => {
             }}>
             {number + 1}
           </Avatar>
-          // <Chip
-          //   color={muiColor}
-          //   onClick={() => setScore(number + 1)}
-          //   checked={equipe.score >= number + 1}>
-          //   {number + 1}
-          // </Chip>
         ))}
       </div>
     </div>
