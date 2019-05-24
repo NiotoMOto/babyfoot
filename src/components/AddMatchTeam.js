@@ -1,5 +1,6 @@
 import React from "react";
 import find from "lodash/find";
+import orderBy from "lodash/orderBy";
 import { Chip, Avatar } from "@material-ui/core";
 
 export const AddMatchTeam = ({
@@ -30,14 +31,13 @@ export const AddMatchTeam = ({
       });
     }
   };
-  console.log(equipe, otherEquipe);
   const isInOtherEquipe = u =>
     !!otherEquipe.members.find(member => member.value === u.id);
   const muiColor = color === "bleu" ? "primary" : "secondary";
   return (
-    <div style={{ marginTop: "20px", padding: "30px" }}>
+    <div style={{ padding: "0 8px" }}>
       <div style={{ marginBottom: "20px" }}>
-        {users.map(user => (
+        {orderBy(users, "displayName").map(user => (
           <div style={{ margin: "5px", display: "inline-block" }}>
             <Chip
               style={{ fontSize: "10px" }}

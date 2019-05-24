@@ -24,13 +24,15 @@ export const AddMatchRecap = ({ equipe, setSelectedTeam, color, styles }) => {
               </div>
             ))}
           </div>
-          <div style={{ justifyContent: "center", display: "flex" }}>
+          <div
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              flexDirection: "column"
+            }}>
             <Avatar style={{ background: sytleColor }}>{equipe.score}</Avatar>
           </div>
         </div>
-        {/* <div style={{ justifyContent: "center", display: "flex" }}>
-          <Avatar style={{ background: sytleColor }}>{equipe.score}</Avatar>
-        </div> */}
       </CardContent>
     </div>
   );

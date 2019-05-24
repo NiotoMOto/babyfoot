@@ -22,6 +22,7 @@ import { AddMatchTeam } from "./AddMatchTeam";
 import { AddMatchScore } from "./AddMatchScore";
 import AddIcon from "@material-ui/icons/Save";
 import { AddMatchRecap } from "./AddMatchRecap";
+import { LoaderInline } from "./LoaderInline";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -136,10 +137,7 @@ export function AddMatchdialog({ open, handleClose }) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <div style={{ width: "100%", textAlign: "center" }}>
-        <Typography variant="subtitle2" color="textPrimary">
-          Equipe Bleue
-        </Typography>{" "}
+      <div style={{ width: "100%", textAlign: "center", marginTop: "20px" }}>
         <Switch
           onClick={toggleTeam}
           checked={selectedTeam === "rouge"}
@@ -147,10 +145,7 @@ export function AddMatchdialog({ open, handleClose }) {
             switchBase: classes.colorSwitchBase,
             checked: classes.colorChecked
           }}
-        />{" "}
-        <Typography variant="subtitle2" color="textPrimary">
-          Equipe Rouge
-        </Typography>
+        />
       </div>
       {selectedTeam === "bleu" && (
         <React.Fragment>
@@ -188,6 +183,16 @@ export function AddMatchdialog({ open, handleClose }) {
           />
         </React.Fragment>
       )}
+      <div style={{ width: "100%", textAlign: "center", marginTop: "20px" }}>
+        <Switch
+          onClick={toggleTeam}
+          checked={selectedTeam === "rouge"}
+          classes={{
+            switchBase: classes.colorSwitchBase,
+            checked: classes.colorChecked
+          }}
+        />
+      </div>
       <div style={{ margin: "15px", position: "relative" }}>
         <AddMatchRecap
           color="bleu"
@@ -204,8 +209,12 @@ export function AddMatchdialog({ open, handleClose }) {
             display: "flex",
             justifyContent: "center"
           }}>
-          <Fab onClick={onClickSave} disabled={loading}>
-            <AddIcon />
+          <Fab
+            style={{ color: "white", background: loading ? "grey" : "black" }}
+            onClick={onClickSave}
+            disabled={loading}>
+            {loading && <LoaderInline />}
+            {!loading && <AddIcon />}
           </Fab>
         </div>
         <AddMatchRecap
