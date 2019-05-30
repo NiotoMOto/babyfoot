@@ -26,7 +26,6 @@ function computePoint(stat, points, uid) {
   const arrayMatchs = arrayExpo(points.ideal);
   const ratioButMoyenne =
     reduce(stat.ratioBut, (sum, n) => sum + n, 0) / stat.ratioBut.length;
-  console.log(ratioButMoyenne, stat.victories);
   return Math.round(
     (ratioButMoyenne * points.but +
       (stat.victories / stat.party) * points.victory) *

@@ -4,6 +4,7 @@ import { User } from "./User";
 import { StatLine } from "./StatsLine";
 import { type } from "os";
 import { Typography } from "@material-ui/core";
+import { DefisPoints } from "./DefisPoints";
 
 const leadsStyles = {
   0: "or",
@@ -28,7 +29,17 @@ export function LeaderBoard({ stats }) {
       {orderBy(stats, ["points"], ["desc"]).map((stat, index) => (
         <StatLine
           key={stat.docRef.id}
-          label={<User docRef={stat.docRef} variant={leadsStyles[index]} />}
+          label={
+            <span>
+              <User docRef={stat.docRef} variant={leadsStyles[index]} />
+              {stat.defis !== 0 && (
+                <DefisPoints
+                  sign={stat.defis > 0 ? "+" : "-"}
+                  points={stat.defis}
+                />
+              )}
+            </span>
+          }
           value={stat.points}
           valueStyle={variantStyles[leadsStyles[index]]}
         />
