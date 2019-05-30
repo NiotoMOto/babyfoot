@@ -6,7 +6,7 @@ export function LoadingResult({ lines = 4 }) {
   return (
     <div className="container">
       {times(lines).map((v, key) => (
-        <div className="post">
+        <div key={key} className="post">
           <div className="avatar" />
           <div className="line" />
         </div>

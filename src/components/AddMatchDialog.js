@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import indigo from "@material-ui/core/colors/indigo";
 import flatten from "lodash/flatten";
@@ -137,15 +137,6 @@ function saveMatch(equipeBleue, equipeRouge, defis) {
         )
       ]);
     });
-}
-
-function getUserAutocomplete(users, usedUsers, classes) {
-  return users
-    .filter(user => !usedUsers.map(u => u.value).includes(user.id))
-    .map(user => ({
-      value: user.id,
-      label: user.displayName
-    }));
 }
 
 export function AddMatchdialog({ open, handleClose }) {

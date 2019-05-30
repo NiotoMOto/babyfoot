@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { Chip, Avatar } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Badges } from "./Badges";
@@ -9,7 +9,10 @@ export function User({ docRef, variant, userObject }) {
   useEffect(
     () => {
       if (docRef) {
-        docRef.get({ source: "cache" }).then(doc => setUser(doc.data()));
+        const promise = docRef
+          .get({ source: "cache" })
+          .then(doc => setUser(doc.data()));
+        return () => promise.then(null);
       }
     },
     [docRef]

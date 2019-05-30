@@ -1,5 +1,4 @@
 import React from "react";
-import purple from "@material-ui/core/colors/purple";
 import { User } from "./User";
 import { DefisPoints } from "./DefisPoints";
 

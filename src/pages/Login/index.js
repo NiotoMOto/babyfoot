@@ -27,7 +27,7 @@ export const Login = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="center">
-        <img width="100%" src={KingOfBaby} />
+        <img alt="king of baby" width="100%" src={KingOfBaby} />
       </Flex>
       <Flex
         mt="-200px"

@@ -1,7 +1,5 @@
 import React, { Fragment } from "react";
 import { Chip, Avatar, CardContent } from "@material-ui/core";
-import groupBy from "lodash/groupBy";
-import merge from "lodash/merge";
 import purple from "@material-ui/core/colors/purple";
 
 export const AddMatchRecap = ({

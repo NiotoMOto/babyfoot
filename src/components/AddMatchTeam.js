@@ -1,7 +1,6 @@
 import React from "react";
 import find from "lodash/find";
 import orderBy from "lodash/orderBy";
-import { Chip, Avatar } from "@material-ui/core";
 import { UserButton } from "./UserButton";
 
 export const AddMatchTeam = ({

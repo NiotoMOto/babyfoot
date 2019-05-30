@@ -84,7 +84,7 @@ function statsByUser(matchs, points) {
   const stats = {};
 
   return new Promise(resolve => {
-    matchs.map(match => {
+    matchs.forEach(match => {
       mapUser(match.equipeBleue, stats, match.equipeRouge);
       mapUser(match.equipeRouge, stats, match.equipeBleue);
     });
@@ -127,6 +127,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
           },
           () => setWeeksDbLoaded(true)
         );
+      console.log("unsubscribe", unsubscribe);
       return () => unsubscribe();
     },
     [week, year]
