@@ -82,7 +82,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
         {getTitleStats(currentWeek, week, year, currentYear)}
       </Typography>
       <div style={{ margin: "10px" }}>
-        {points && <MatchsStats points={points} week={week} matchs={matchs} />}
+        <MatchsStats points={points} week={week} matchs={matchs} />
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitle(currentWeek, week, year, currentYear)}

@@ -105,7 +105,8 @@ export function Defi() {
             .filter(user => user.uid !== currentUser.uid)
             .map(user => (
               <UserButton
-                color={user.uid === contender.uid ? "primary" : ""}
+                key={user.id}
+                color={user.uid === contender.uid ? "primary" : "default"}
                 label={user.displayName}
                 photoURL={user.photoURL}
                 onClick={() => setContender(user)}
@@ -128,7 +129,7 @@ export function Defi() {
               }}
               color="primary"
               disabled={isEmpty(contender) || loading || defisToday.length >= 2}
-              variant="raised">
+              variant="contained">
               Enregister defi
             </Button>
             <div style={{ paddingLeft: "10px" }}>

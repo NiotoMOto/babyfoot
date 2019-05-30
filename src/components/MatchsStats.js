@@ -11,6 +11,7 @@ import { CloseWeek } from "./CloseWeek";
 import { LeaderBoard } from "./LeaderBoard";
 import dayjs from "dayjs";
 import { LivePoints } from "./LivePoints";
+import { LoadingResult } from "./LoadingResult";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
@@ -82,21 +83,25 @@ function mapUser(team, stats, otherTeam) {
 function statsByUser(matchs, points) {
   const stats = {};
 
-  matchs.map(match => {
-    mapUser(match.equipeBleue, stats, match.equipeRouge);
-    mapUser(match.equipeRouge, stats, match.equipeBleue);
-  });
+  return new Promise(resolve => {
+    matchs.map(match => {
+      mapUser(match.equipeBleue, stats, match.equipeRouge);
+      mapUser(match.equipeRouge, stats, match.equipeBleue);
+    });
 
-  return map(stats, (stat, key) => ({
-    ...stat,
-    points: computePoint(stat, points, key)
-  }));
+    const userPoints = map(stats, (stat, key) => ({
+      ...stat,
+      points: computePoint(stat, points, key)
+    }));
+    resolve(userPoints);
+  });
 }
 
 export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   const [tab, setTab] = useState(0);
   const [weeksDb, setWeekDb] = useState(null);
   const [weeksDbLoaded, setWeeksDbLoaded] = useState(false);
+  const [stats, setStats] = useState(null);
 
   function handleChange(event, newValue) {
     setTab(newValue);
@@ -105,7 +110,10 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   useEffect(
     () => {
       setWeeksDbLoaded(false);
-      db.collection("weeks")
+      setWeekDb(null);
+      setStats(null);
+      const unsubscribe = db
+        .collection("weeks")
         .where("week", "==", week)
         .where("year", "==", year)
         .onSnapshot(
@@ -119,10 +127,19 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
           },
           () => setWeeksDbLoaded(true)
         );
+      return () => unsubscribe();
     },
     [week, year]
   );
-  const stats = statsByUser(matchs, points);
+
+  useEffect(
+    () => {
+      if (points) {
+        statsByUser(matchs, points).then(s => setStats(s));
+      }
+    },
+    [matchs, points]
+  );
 
   return (
     <div>
@@ -138,77 +155,84 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
               <Tab label="Buts" />
               <Tab label="Générales" />
             </Tabs>
-            <div style={{ padding: "10px" }}>
-              {tab === 0 && (
+            <div style={{ padding: "10px", minHeight: "340px" }}>
+              {!weeksDb && !stats && <LoadingResult lines={6} />}
+              {(!!weeksDb || !!stats) && (
                 <Fragment>
-                  {weeksDb && <LeaderBoard stats={weeksDb.stats} />}
-                  {points && weeksDbLoaded && !weeksDb && points && (
-                    <LivePoints stats={stats} />
+                  {tab === 0 && (
+                    <Fragment>
+                      {weeksDb && <LeaderBoard stats={weeksDb.stats} />}
+                      {points && weeksDbLoaded && !weeksDb && points && (
+                        <LivePoints stats={stats} />
+                      )}
+                    </Fragment>
                   )}
-                </Fragment>
-              )}
-              {tab === 1 && (
-                <Fragment>
-                  {orderBy(stats, ["ratioVictories"], ["desc"]).map(stat => (
-                    <StatLine
-                      key={stat.docRef.id}
-                      label={<User docRef={stat.docRef} />}
-                      value={`${stat.ratioVictories} %`}
-                      tooltip="test"
-                    />
-                  ))}
-                </Fragment>
-              )}
-              {tab === 2 && (
-                <Fragment>
-                  {orderBy(stats, ["pary"], ["desc"]).map(stat => (
-                    <StatLine
-                      key={stat.docRef.id}
-                      label={<User docRef={stat.docRef} />}
-                      value={stat.party}
-                    />
-                  ))}
-                </Fragment>
-              )}{" "}
-              {tab === 3 && (
-                <Fragment>
-                  {orderBy(stats, ["buts"], ["desc"]).map(stat => (
-                    <StatLine
-                      key={stat.docRef.id}
-                      label={<User docRef={stat.docRef} />}
-                      value={stat.buts}
-                    />
-                  ))}
-                </Fragment>
-              )}
-              {tab === 4 && (
-                <Fragment>
-                  <StatLine label="Matchs Joué" value={matchs.length} />
-                  <StatLine
-                    label="Buts Totaux"
-                    value={reduce(
-                      matchs,
-                      (sum, n) =>
-                        sum + n.equipeBleue.score + n.equipeRouge.score,
-                      0
-                    )}
-                  />
-                  <StatLine
-                    label="Buts coté bleue"
-                    value={reduce(
-                      matchs,
-                      (sum, n) => sum + n.equipeBleue.score,
-                      0
-                    )}
-                  />
-                  <StatLine
-                    label="Buts coté rouge"
-                    value={reduce(
-                      matchs,
-                      (sum, n) => sum + n.equipeRouge.score,
-                      0
-                    )}
-                  />
+                  {tab === 1 && (
+                    <Fragment>
+                      {orderBy(stats, ["ratioVictories"], ["desc"]).map(
+                        stat => (
+                          <StatLine
+                            key={stat.docRef.id}
+                            label={<User docRef={stat.docRef} />}
+                            value={`${stat.ratioVictories} %`}
+                            tooltip="test"
+                          />
+                        )
+                      )}
+                    </Fragment>
+                  )}
+                  {tab === 2 && (
+                    <Fragment>
+                      {orderBy(stats, ["pary"], ["desc"]).map(stat => (
+                        <StatLine
+                          key={stat.docRef.id}
+                          label={<User docRef={stat.docRef} />}
+                          value={stat.party}
+                        />
+                      ))}
+                    </Fragment>
+                  )}{" "}
+                  {tab === 3 && (
+                    <Fragment>
+                      {orderBy(stats, ["buts"], ["desc"]).map(stat => (
+                        <StatLine
+                          key={stat.docRef.id}
+                          label={<User docRef={stat.docRef} />}
+                          value={stat.buts}
+                        />
+                      ))}
+                    </Fragment>
+                  )}
+                  {tab === 4 && (
+                    <Fragment>
+                      <StatLine label="Matchs Joué" value={matchs.length} />
+                      <StatLine
+                        label="Buts Totaux"
+                        value={reduce(
+                          matchs,
+                          (sum, n) =>
+                            sum + n.equipeBleue.score + n.equipeRouge.score,
+                          0
+                        )}
+                      />
+                      <StatLine
+                        label="Buts coté bleue"
+                        value={reduce(
+                          matchs,
+                          (sum, n) => sum + n.equipeBleue.score,
+                          0
+                        )}
+                      />
+                      <StatLine
+                        label="Buts coté rouge"
+                        value={reduce(
+                          matchs,
+                          (sum, n) => sum + n.equipeRouge.score,
+                          0
+                        )}
+                      />
+                    </Fragment>
+                  )}
                 </Fragment>
               )}
             </div>
