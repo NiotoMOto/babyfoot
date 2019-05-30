@@ -28,7 +28,14 @@ export function User({ docRef, variant, userObject }) {
             avatar={<Avatar alt="" src={user.photoURL} />}
             label={
               <div style={{ display: "flex" }}>
-                {user.displayName}
+                <span
+                  style={{
+                    maxWidth: "101px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}>
+                  {user.displayName}
+                </span>
                 {!variant && <Badges wins={user.wins} />}
               </div>
             }

@@ -34,7 +34,7 @@ export function LeaderBoard({ stats }) {
               <User docRef={stat.docRef} variant={leadsStyles[index]} />
               {stat.defis !== 0 && (
                 <DefisPoints
-                  sign={stat.defis > 0 ? "+" : "-"}
+                  sign={stat.defis > 0 ? "+" : ""}
                   points={stat.defis}
                 />
               )}

@@ -11,11 +11,16 @@ export function LivePoints({ stats }) {
         <StatLine
           key={stat.docRef.id}
           label={
-            <span>
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%"
+              }}>
               <User docRef={stat.docRef} />
               {stat.defis !== 0 && (
                 <DefisPoints
-                  sign={stat.defis > 0 ? "+" : "-"}
+                  sign={stat.defis > 0 ? "+" : ""}
                   points={stat.defis}
                 />
               )}

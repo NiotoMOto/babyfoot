@@ -97,7 +97,6 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   const [tab, setTab] = useState(0);
   const [weeksDb, setWeekDb] = useState(null);
   const [weeksDbLoaded, setWeeksDbLoaded] = useState(false);
-  const stats = statsByUser(matchs, points);
 
   function handleChange(event, newValue) {
     setTab(newValue);
@@ -123,6 +122,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
     },
     [week, year]
   );
+  const stats = statsByUser(matchs, points);
 
   return (
     <div>

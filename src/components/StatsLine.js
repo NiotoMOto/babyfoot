@@ -28,7 +28,11 @@ export function StatLine({
         justifyContent: "space-between",
         marginBottom: "10px"
       }}>
-      <Typography variant="overline">{label}</Typography>
+      <Typography
+        style={{ width: "100%", paddingRight: "10px" }}
+        variant="overline">
+        {label}
+      </Typography>
       <div
         style={{
           display: "flex",
