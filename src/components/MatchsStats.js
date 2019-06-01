@@ -127,7 +127,6 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
           },
           () => setWeeksDbLoaded(true)
         );
-      console.log("unsubscribe", unsubscribe);
       return () => unsubscribe();
     },
     [week, year]

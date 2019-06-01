@@ -96,7 +96,7 @@ export function Header() {
           <Menu />
         </div>
       </Drawer>
-      <AppBar color="primary" position="relative">
+      <AppBar color="secondary" position="relative">
         <Toolbar>
           <IconButton
             onClick={() => setMenu(true)}
