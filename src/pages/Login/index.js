@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { ui, auth } from "../../firebaseConfig";
-import { Flex } from "rebass";
 import KingOfBaby from "../../assets/KingOfBaby.png";
 
 export const Login = () => {
@@ -12,7 +11,7 @@ export const Login = () => {
   }, []);
 
   return (
-    <Flex
+    <div
       style={{
         height: "100vh",
         backgroundPosition: "center",

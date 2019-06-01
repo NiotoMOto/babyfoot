@@ -21,7 +21,9 @@ export const AddMatchRecap = ({
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {equipe.members.map(member => (
-              <div style={{ margin: "5px", display: "inline-block" }}>
+              <div
+                key={member.value}
+                style={{ margin: "5px", display: "inline-block" }}>
                 <Chip
                   style={{ fontSize: "10px" }}
                   avatar={<Avatar alt="" src={member.photoURL} />}
