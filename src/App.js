@@ -11,7 +11,6 @@ import { Login } from "./pages/Login";
 import { DefaultLayout } from "./DefaultLayout";
 import { auth, db } from "./firebaseConfig";
 import { Loader } from "./components/Loader";
-import "semantic-ui-css/semantic.min.css";
 import { MatchsPage } from "./pages/Matchs";
 import { ProfilPage } from "./pages/profil";
 import { DefiPage } from "./pages/Defi";

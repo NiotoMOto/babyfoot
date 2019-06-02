@@ -7,7 +7,6 @@ const teamStyle = {
   justifyContent: "space-between",
   display: "flex",
   flexDirection: "row",
-  width: "100%",
   padding: "10px"
 };
 
