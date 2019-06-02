@@ -33,7 +33,7 @@ export function User({ docRef, variant, userObject }) {
               <div style={{ display: "flex" }}>
                 <span
                   style={{
-                    maxWidth: "101px",
+                    maxWidth: "100px",
                     overflow: "hidden",
                     textOverflow: "ellipsis"
                   }}>

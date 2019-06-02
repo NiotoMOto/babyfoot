@@ -29,7 +29,12 @@ export function LeaderBoard({ stats }) {
         <StatLine
           key={stat.docRef.id}
           label={
-            <span>
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%"
+              }}>
               <User docRef={stat.docRef} variant={leadsStyles[index]} />
               {stat.defis !== 0 && (
                 <DefisPoints
