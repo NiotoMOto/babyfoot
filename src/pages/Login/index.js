@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
+import loginbg from "../../assets/loginbg.jpg";
 import { ui, auth } from "../../firebaseConfig";
-import KingOfBaby from "../../assets/KingOfBaby.png";
-import { Flex } from "rebass";
+import Typography from "@material-ui/core/Typography";
 
 export const Login = () => {
   useEffect(() => {
@@ -10,32 +10,45 @@ export const Login = () => {
       signInSuccessUrl: "/"
     });
   }, []);
-
+  console.log(loginbg);
   return (
-    <Flex
-      style={{
-        height: "100vh",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover"
-      }}
-      width="100%"
-      flexDirection="column"
-      justifyContent="center">
-      <Flex
-        mt="-200px"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="center">
-        <img alt="king of baby" width="100%" src={KingOfBaby} />
-      </Flex>
-      <Flex
-        mt="-200px"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="center">
+    <div style={{ height: "100%" }}>
+      <div
+        style={{
+          padding: "10px",
+          backgroundImage: `url(${loginbg})`,
+          height: "100%",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          filter: "blur(4px)",
+          position: "absolute",
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: -3
+        }}
+      />
+      <div
+        style={{
+          zIndex: 3,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-evenly",
+          height: "100%"
+        }}>
+        <Typography
+          style={{
+            textAlign: "center",
+            marginTop: "30px",
+            color: "white",
+            fontFamily: "auto"
+          }}
+          variant="h2">
+          King of baby
+        </Typography>
         <div id="auth-container" />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
