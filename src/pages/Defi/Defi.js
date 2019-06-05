@@ -77,6 +77,8 @@ export function Defi() {
       .collection("defis")
       .where("requester", "==", db.collection("users").doc(currentUser.uid))
       .where("day", "==", day.day())
+      .where("week", "==", day.week())
+      .where("year", "==", day.year())
       .orderBy("createdAt", "desc")
       .onSnapshot(doc => {
         setDefisTOday(extractData(doc));
