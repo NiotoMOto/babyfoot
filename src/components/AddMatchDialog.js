@@ -28,7 +28,9 @@ import { AddMatchTeam } from "./AddMatchTeam";
 import { AddMatchScore } from "./AddMatchScore";
 import AddIcon from "@material-ui/icons/Save";
 import { AddMatchRecap } from "./AddMatchRecap";
+import find from "lodash/find";
 import { LoaderInline } from "./LoaderInline";
+import { DefisLists } from "./DefisLists";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -145,8 +147,12 @@ export function AddMatchdialog({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
   const [equipeBleue, setEquipeBleue] = useState({ members: [], score: 0 });
   const [equipeRouge, setEquipeRouge] = useState({ members: [], score: 0 });
-  const [defis, setDefis] = useState([]);
+  const [matchDefis, setMatchDefis] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("bleu");
+  const defiPoints = merge(
+    groupBy(matchDefis, "requester.id"),
+    groupBy(matchDefis, "sendingTo.id")
+  );
   const onClickSave = () => {
     setLoading(true);
     saveMatch(equipeBleue, equipeRouge, defiPoints)
@@ -160,6 +166,7 @@ export function AddMatchdialog({ open, handleClose }) {
       .catch(() => setLoading(false));
   };
   useEffect(() => {
+    console.log("USE");
     db.collection("users")
       .limit(50)
       .get()
@@ -175,39 +182,83 @@ export function AddMatchdialog({ open, handleClose }) {
     return setSelectedTeam("bleu");
   };
 
-  useEffect(
-    () => {
-      const members = [...equipeBleue.members, ...equipeRouge.members].map(
-        member => db.collection("users").doc(member.value)
-      );
-      Promise.all(
-        flatten(
-          members.map(member => [
-            getDefis(member, "requester"),
-            getDefis(member, "sendingTo")
-          ])
-        )
-      ).then(results =>
-        setDefis(uniqBy(flatten(results.map(res => extractData(res))), "id"))
-      );
-    },
-    [equipeBleue.members, equipeRouge.members]
-  );
-  const matchDefis = defis.filter(d => {
-    const idBlues = equipeBleue.members.map(em => em.value);
-    const idRouge = equipeRouge.members.map(er => er.value);
-    const isOnWay =
-      idBlues.includes(d.requester.id) && idRouge.includes(d.sendingTo.id);
-    const isOnOtherWay =
-      idBlues.includes(d.sendingTo.id) && idRouge.includes(d.requester.id);
-    return isOnWay || isOnOtherWay;
-  });
+  const handleClickAddUser = async (user, color) => {
+    const setEquipe = color === "rouge" ? setEquipeRouge : setEquipeBleue;
+    const equipe = color === "rouge" ? equipeRouge : equipeBleue;
+    const userExitAlready = find(equipe.members, { value: user.id });
+    let newEquipe = {};
+    if (userExitAlready) {
+      newEquipe = {
+        ...equipe,
+        members: equipe.members.filter(member => member.value !== user.id)
+      };
+    } else {
+      newEquipe = {
+        ...equipe,
+        members: [
+          ...equipe.members,
+          {
+            value: user.id,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          }
+        ]
+      };
+    }
+    setEquipe(newEquipe);
+  };
 
-  const defiPoints = merge(
-    groupBy(matchDefis, "requester.id"),
-    groupBy(matchDefis, "sendingTo.id")
-  );
+  // useEffect(
+  //   () => {
+  //     const members = uniqBy(
+  //       [...equipeBleue.members, ...equipeRouge.members],
+  //       "value"
+  //     ).map(member => db.collection("users").doc(member.value));
+  //     console.log("members", members);
 
+  //     Promise.all(
+  //       flatten(
+  //         members.map(member => [
+  //           getDefis(member, "requester"),
+  //           getDefis(member, "sendingTo")
+  //         ])
+  //       )
+  //     ).then(results => {
+  //       console.log(
+  //         "results XHR",
+  //         flatten(results.map(res => extractData(res).map(d => d.id)))
+  //       );
+  //       const d = uniqBy(flatten(results.map(res => extractData(res))), "id");
+  //       console.log("d map", d.map(d => d.id));
+  //       const md = d.filter(d => {
+  //         const idBlues = equipeBleue.members.map(em => em.value);
+  //         const idRouge = equipeRouge.members.map(er => er.value);
+  //         const isOnWay =
+  //           idBlues.includes(d.requester.id) &&
+  //           idRouge.includes(d.sendingTo.id);
+  //         const isOnOtherWay =
+  //           idBlues.includes(d.sendingTo.id) &&
+  //           idRouge.includes(d.requester.id);
+  //         return !!isOnWay || !!isOnOtherWay;
+  //       });
+  //       console.log("md map", md.map(d => d.id));
+  //       setMatchDefis(md);
+
+  //       console.log(
+  //         equipeBleue.members.reduce((sum, member) => sum + member.value, "")
+  //       );
+  //       console.log(
+  //         equipeRouge.members.reduce((sum, member) => sum + member.value, "")
+  //       );
+  //     });
+  //   },
+  //   [
+  //     equipeRouge.members.reduce((sum, member) => sum + member.value, ""),
+  //     equipeBleue.members.reduce((sum, member) => sum + member.value, "")
+  //   ]
+  // );
+
+  console.log("RENDER matchdefis", matchDefis);
   return (
     <Dialog
       fullScreen
@@ -242,6 +293,7 @@ export function AddMatchdialog({ open, handleClose }) {
             setEquipe={setEquipeBleue}
             users={users}
             color="bleu"
+            onClick={handleClickAddUser}
           />
           <AddMatchScore
             equipe={equipeBleue}
@@ -259,6 +311,7 @@ export function AddMatchdialog({ open, handleClose }) {
             otherEquipe={equipeBleue}
             setEquipe={setEquipeRouge}
             users={users}
+            onClick={handleClickAddUser}
             color="rouge"
           />
           <AddMatchScore
@@ -315,29 +368,7 @@ export function AddMatchdialog({ open, handleClose }) {
           defiPoints={defiPoints}
           styles={{ paddingTop: "35px" }}
         />
-        <div>
-          {matchDefis.length > 0 && (
-            <Typography style={{ textAlign: "center" }} variant="headline">
-              Defis
-            </Typography>
-          )}
-          {matchDefis.map(md => (
-            <div
-              style={{
-                display: "flex",
-                padding: "10px",
-                alignItems: "center"
-              }}>
-              <div>
-                <User docRef={md.requester} />
-                <User docRef={md.sendingTo} />
-              </div>
-              <div>
-                <Avatar style={{ background: purple[500] }}>{md.points}</Avatar>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DefisLists defis={matchDefis} />
       </div>
     </Dialog>
   );

@@ -8,29 +8,9 @@ export const AddMatchTeam = ({
   setEquipe,
   otherEquipe,
   users = [],
-  color
+  color,
+  onClick
 }) => {
-  const onClickUser = user => {
-    const userExitAlready = find(equipe.members, { value: user.id });
-    if (userExitAlready) {
-      setEquipe({
-        ...equipe,
-        members: equipe.members.filter(member => member.value !== user.id)
-      });
-    } else {
-      setEquipe({
-        ...equipe,
-        members: [
-          ...equipe.members,
-          {
-            value: user.id,
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          }
-        ]
-      });
-    }
-  };
   const isInOtherEquipe = u =>
     !!otherEquipe.members.find(member => member.value === u.id);
   const muiColor = color === "bleu" ? "primary" : "secondary";
@@ -50,7 +30,7 @@ export const AddMatchTeam = ({
               color={isInOtherEquipe(user) ? "default" : muiColor}
               photoURL={user.photoURL}
               onClick={() =>
-                !isInOtherEquipe(user) ? onClickUser(user) : null
+                !isInOtherEquipe(user) ? onClick(user, color) : null
               }
               label={user.displayName}
             />

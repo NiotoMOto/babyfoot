@@ -14,6 +14,7 @@ import { Loader } from "./components/Loader";
 import { MatchsPage } from "./pages/Matchs";
 import { ProfilPage } from "./pages/profil";
 import { DefiPage } from "./pages/Defi";
+import { DefiAdminPage } from "./pages/Defi/Admin";
 import { askForPermissioToReceiveNotifications } from "./pushNotification";
 
 export const UserContext = React.createContext();
@@ -88,6 +89,11 @@ function Routes({ me, noUser }) {
                 exact
                 path="/defi"
                 component={withAuthUser(DefiPage)}
+              />
+              <DefaultLayout
+                exact
+                path="/defi/admin"
+                component={withAuthUser(DefiAdminPage)}
               />
             </>
           )}

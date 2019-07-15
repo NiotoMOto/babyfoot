@@ -68,7 +68,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
         )}
       </div>
       <div style={{ margin: "10px" }}>
-        <Link to="/defi">
+        {/* <Link to="/defi">
           <Fab
             size="small"
             color="primary"
@@ -76,7 +76,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
             aria-label="Delete">
             <FitnessCenter /> Défis
           </Fab>
-        </Link>
+        </Link> */}
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitleStats(currentWeek, week, year, currentYear)}
@@ -90,10 +90,12 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
       {week === currentWeek && (
         <AddMatchButton onClick={() => setOpenAddMatch(true)} />
       )}
-      <AddMatchdialog
-        open={openAddMatch}
-        handleClose={() => setOpenAddMatch(false)}
-      />
+      {openAddMatch && (
+        <AddMatchdialog
+          open={openAddMatch}
+          handleClose={() => setOpenAddMatch(false)}
+        />
+      )}
       {matchs.map((match, id) => (
         <Match key={id} match={match} />
       ))}
