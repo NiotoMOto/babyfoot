@@ -77,7 +77,7 @@ function Routes({ me, noUser }) {
               <DefaultLayout exact path="/" component={withAuthUser(Home)} />
               <DefaultLayout
                 exact
-                path="/matchs/:week"
+                path="/matchs/:group/:year/:week"
                 component={withAuthUser(MatchsPage)}
               />
               <DefaultLayout

@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function saveMatch(equipeBleue, equipeRouge, defis) {
+function saveMatch(equipeBleue, equipeRouge, defis, group) {
   const idBlues = equipeBleue.members.map(em => em.value);
   const idRouge = equipeRouge.members.map(er => er.value);
   const matchData = {
@@ -102,7 +102,8 @@ function saveMatch(equipeBleue, equipeRouge, defis) {
     },
     createdAt: firestore.FieldValue.serverTimestamp(),
     week: dayjs(new Date()).week(),
-    year: dayjs(new Date()).year()
+    year: dayjs(new Date()).year(),
+    group: db.collection("groups").doc(group)
   };
   return db
     .collection("matchs")
@@ -141,7 +142,7 @@ function saveMatch(equipeBleue, equipeRouge, defis) {
     });
 }
 
-export function AddMatchdialog({ open, handleClose }) {
+export function AddMatchdialog({ open, handleClose, group }) {
   const classes = useStyles();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -155,7 +156,7 @@ export function AddMatchdialog({ open, handleClose }) {
   );
   const onClickSave = () => {
     setLoading(true);
-    saveMatch(equipeBleue, equipeRouge, defiPoints)
+    saveMatch(equipeBleue, equipeRouge, defiPoints, group)
       .then(() => handleClose())
       .then(() => {
         setLoading(false);

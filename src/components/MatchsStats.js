@@ -20,7 +20,7 @@ function calculate(sum = 0, nb) {
 function arrayExpo(ideal) {
   return new Array(ideal)
     .fill(null)
-    .map((n, i) => Math.min(Math.pow(i + 1, 2) / Math.pow(30, 2), 1));
+    .map((n, i) => Math.exp(-(ideal - (i + 1))));
 }
 
 function computePoint(stat, points, uid) {
@@ -97,7 +97,13 @@ function statsByUser(matchs, points) {
   });
 }
 
-export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
+export function MatchsStats({
+  matchs,
+  week,
+  year = dayjs().year(),
+  points,
+  group
+}) {
   const [tab, setTab] = useState(0);
   const [weeksDb, setWeekDb] = useState(null);
   const [weeksDbLoaded, setWeeksDbLoaded] = useState(false);
@@ -116,6 +122,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
         .collection("weeks")
         .where("week", "==", week)
         .where("year", "==", year)
+        .where("group", "==", db.collection("groups").doc(group))
         .onSnapshot(
           doc => {
             if (doc.docs.length) {
@@ -145,7 +152,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
     <div>
       {matchs && (
         <Fragment>
-          <CloseWeek week={parseInt(week)} stats={stats} />
+          <CloseWeek week={parseInt(week)} stats={stats} group={group} />
 
           <Paper square>
             <Tabs value={tab} onChange={handleChange}>

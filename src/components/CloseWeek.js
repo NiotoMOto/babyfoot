@@ -9,11 +9,16 @@ import {
 import { db, extractData } from "../firebaseConfig";
 import dayjs from "dayjs";
 
-function handleCloseWeek(week, stats, year) {
-  return db.collection("weeks").add({ stats, week, year: dayjs().year() });
+function handleCloseWeek(week, stats, year, group) {
+  return db.collection("weeks").add({
+    stats,
+    week,
+    year: dayjs().year(),
+    group: db.collection("groups").doc(group)
+  });
 }
 
-export function CloseWeek({ year = dayjs().year(), week, stats }) {
+export function CloseWeek({ year = dayjs().year(), week, stats, group }) {
   const [matchs, setMatchs] = useState([]);
   const [weekDb, setWeekDb] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -21,6 +26,8 @@ export function CloseWeek({ year = dayjs().year(), week, stats }) {
     () => {
       db.collection("matchs")
         .where("week", "==", week)
+        .where("year", "==", year)
+        .where("group", "==", db.collection("groups").doc(group))
         .orderBy("createdAt", "desc")
         .get()
         .then(doc => {
@@ -29,6 +36,7 @@ export function CloseWeek({ year = dayjs().year(), week, stats }) {
       db.collection("weeks")
         .where("week", "==", week)
         .where("year", "==", year)
+        .where("group", "==", db.collection("groups").doc(group))
         .onSnapshot(doc => {
           if (doc.docs.length) {
             setWeekDb(extractData(doc)[0]);
@@ -57,7 +65,7 @@ export function CloseWeek({ year = dayjs().year(), week, stats }) {
                   <Button onClick={() => setConfirmOpen(false)}>Non</Button>{" "}
                   <Button
                     onClick={() =>
-                      handleCloseWeek(week, stats).then(() =>
+                      handleCloseWeek(week, stats, year, group).then(() =>
                         setConfirmOpen(false)
                       )
                     }>

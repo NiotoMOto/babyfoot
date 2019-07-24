@@ -4,7 +4,6 @@ import { Avatar, Typography } from "@material-ui/core";
 import { purple } from "@material-ui/core/colors";
 
 export function DefisLists({ defis }) {
-  console.log("defis", defis.map(d => d.id));
   return (
     <div>
       {defis.length > 0 && (

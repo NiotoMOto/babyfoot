@@ -20,7 +20,11 @@ function getTitleStats(currentWeek, week, year, currentYear) {
     : `Stats de la semaine ${week}`;
 }
 
-export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
+export function Matchs({
+  week = dayjs().week(),
+  year = dayjs().year(),
+  group
+}) {
   const [openAddMatch, setOpenAddMatch] = useState(false);
   const [matchs, setMatchs] = useState([]);
   const [points, setPoints] = useState(null);
@@ -31,6 +35,8 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
       const unsubscribe = db
         .collection("matchs")
         .where("week", "==", week)
+        .where("year", "==", year)
+        .where("group", "==", db.collection("groups").doc(group))
         .orderBy("createdAt", "desc")
         .onSnapshot(doc => {
           setMatchs(extractData(doc));
@@ -42,15 +48,20 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
   );
 
   useEffect(() => {
-    db.collection("points").onSnapshot(doc => {
-      setPoints(extractData(doc)[0]);
-    });
+    db.collection("groups")
+      .doc(group)
+      .onSnapshot(doc => {
+        const data = doc.data();
+        if (data) {
+          setPoints(doc.data().points);
+        }
+      });
   }, []);
   return (
     <div style={{ marginBottom: "90px", marginTop: "30px" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         {week - 1 > 0 && (
-          <Link to={`/matchs/${week - 1}`}>
+          <Link to={`/matchs/${group}/${year}/${week - 1}`}>
             <Button disabled={week - 1 <= 0}>
               <ChevronLeft color="primary" />
               Semaine {week - 1}
@@ -59,7 +70,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
         )}
         {week - 1 <= 0 && <div />}
         {week !== currentWeek && (
-          <Link to={`/matchs/${week + 1}`}>
+          <Link to={`/matchs/${group}/${year}/${week + 1}`}>
             <Button disabled={week === currentWeek}>
               Semaine {week + 1}
               <ChevronRight color="primary" />
@@ -82,7 +93,12 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
         {getTitleStats(currentWeek, week, year, currentYear)}
       </Typography>
       <div style={{ margin: "10px" }}>
-        <MatchsStats points={points} week={week} matchs={matchs} />
+        <MatchsStats
+          points={points}
+          week={week}
+          matchs={matchs}
+          group={group}
+        />
       </div>
       <Typography style={{ margin: "10px" }} variant="h5">
         {getTitle(currentWeek, week, year, currentYear)}
@@ -92,6 +108,7 @@ export function Matchs({ week = dayjs().week(), year = dayjs().year() }) {
       )}
       {openAddMatch && (
         <AddMatchdialog
+          group={group}
           open={openAddMatch}
           handleClose={() => setOpenAddMatch(false)}
         />
