@@ -24,30 +24,39 @@ function add(sum = 0, nb) {
   return sum + nb;
 }
 
-function getStats(user, team, otherTeam) {
+function getStats(user, team, otherTeam, group) {
   return {
-    "stats.buts": add(_.get(user.stats, "buts"), team.score),
-    "stats.butsNeg": add(_.get(user.stats, "butsNeg"), otherTeam.score),
-    "stats.defeats": add(
-      _.get(user.stats, "defeats"),
+    [`stats.${group.id}.buts`]: add(
+      _.get(user, `stats.${group.id}.buts`),
+      team.score
+    ),
+    [`stats.${group.id}.butsNeg`]: add(
+      _.get(user, `stats.${group.id}.butsNeg`),
+      otherTeam.score
+    ),
+    [`stats.${group.id}.defeats`]: add(
+      _.get(user, `stats.${group.id}.defeats`),
       otherTeam.victory ? 1 : 0
     ),
-    "stats.victories": add(
-      _.get(user.stats, "victories"),
+    [`stats.${group.id}.victories`]: add(
+      _.get(user, `stats.${group.id}.victories`),
       team.victory ? 1 : 0
     ),
-    "stats.parties": add(_.get(user.stats, "parties"), 1)
+    [`stats.${group.id}.parties`]: add(
+      _.get(user, `stats.${group.id}.parties`),
+      1
+    )
   };
 }
 
-function storeStates(match) {
+function storeStates(match, group) {
   return Promise.all([
     ...match.equipeBleue.members.map(userRefBleu => {
       return userRefBleu.get().then(doc => {
         const userBleu = doc.data();
 
         return userRefBleu.update(
-          getStats(userBleu, match.equipeBleue, match.equipeRouge)
+          getStats(userBleu, match.equipeBleue, match.equipeRouge, group)
         );
       });
     }),
@@ -56,7 +65,7 @@ function storeStates(match) {
         const userRouge = doc.data();
 
         return userRefRouge.update(
-          getStats(userRouge, match.equipeRouge, match.equipeBleue)
+          getStats(userRouge, match.equipeRouge, match.equipeBleue, group)
         );
       });
     })
@@ -65,9 +74,15 @@ function storeStates(match) {
 
 exports.addStats = functions.firestore
   .document("matchs/{matchId}")
-  .onCreate((snap, context) => {
+  .onCreate(async (snap, context) => {
     const match = snap.data();
-    return Promise.all([storeStates(match)])
+    // console.log("GROUP ===>", match.group.data());
+    console.log("MATCH ===>", match);
+    const group = await db
+      .collection("groups")
+      .doc(match.group.id)
+      .get(doc => doc.data());
+    return Promise.all([storeStates(match, group)])
       .then(() => {
         return "Send OK";
       })
@@ -80,23 +95,56 @@ const labelPosition = {
   2: "third"
 };
 
-function storeWeeksStats(stats) {
+function storeWeeksStats(stats, group) {
   return Promise.all(
     _.take(_.orderBy(stats, ["points"], ["desc"]), 3).map((stat, index) => {
       return stat.docRef.get().then(user => {
         const userData = user.data();
-        const fieldToUpdate = `wins.${labelPosition[index]}`;
-        console.log(
-          userData.wins,
-          fieldToUpdate,
-          _.get(userData, fieldToUpdate),
-          {
-            [fieldToUpdate]: add(_.get(userData, fieldToUpdate), 1)
-          }
-        );
-        return stat.docRef.update({
+        const fieldToUpdate = `achievement.${group.id}.${labelPosition[index]}`;
+        console.log("STATS =======>", stat);
+        console.log("group data =======>", group.id);
+        console.log("fieldToUpdate =======>", fieldToUpdate);
+        console.log("groups =======>", group.path);
+        console.log("user path =======>", stat.docRef.path);
+        return user.ref.update({
           [fieldToUpdate]: add(_.get(userData, fieldToUpdate), 1)
         });
+        // return db
+        //   .collection("wins")
+        //   .where("user", "==", stat.docRef)
+        //   .where("group", "==", group)
+        //   .get()
+        //   .then(win => {
+        //     console.log("win =====>", win);
+        //     console.log("win =====>", win.empty);
+        //     console.log(_.get(win, fieldToUpdate));
+        //     if (!win.empty) {
+        //       const winLine = win.docs[0];
+        //       return winLine.ref.update({
+        //         [fieldToUpdate]: add(_.get(winLine.data(), fieldToUpdate), 1)
+        //       });
+        //     } else {
+        //       return db.collection("wins").add({
+        //         [fieldToUpdate]: 1,
+        //         user: stat.docRef,
+        //         group
+        //       });
+        //     }
+        //   })
+        //   .catch(e => {
+        //     console.log("erroror", e);
+        //   });
+        // console.log(
+        //   userData.wins,
+        //   fieldToUpdate,
+        //   _.get(userData, fieldToUpdate),
+        //   {
+        //     [fieldToUpdate]: add(_.get(userData, fieldToUpdate), 1)
+        //   }
+        // );
+        // return stat.docRef.update({
+        //   [fieldToUpdate]: add(_.get(userData, fieldToUpdate), 1)
+        // });
       });
     })
   );
@@ -106,7 +154,7 @@ exports.addWins = functions.firestore
   .document("weeks/{weekId}")
   .onCreate((snap, context) => {
     const statsData = snap.data();
-    return Promise.all([storeWeeksStats(statsData.stats)])
+    return Promise.all([storeWeeksStats(statsData.stats, statsData.group)])
       .then(() => {
         return "Send OK";
       })

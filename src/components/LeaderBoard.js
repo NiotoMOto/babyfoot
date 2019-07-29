@@ -4,6 +4,7 @@ import { User } from "./User";
 import { StatLine } from "./StatsLine";
 import { Typography } from "@material-ui/core";
 import { DefisPoints } from "./DefisPoints";
+import { useGroupContext } from "./Matchs";
 
 const leadsStyles = {
   0: "or",
@@ -18,6 +19,8 @@ const variantStyles = {
 };
 
 export function LeaderBoard({ stats }) {
+  const group = useGroupContext();
+
   return (
     <div>
       <Typography
@@ -35,7 +38,11 @@ export function LeaderBoard({ stats }) {
                 justifyContent: "space-between",
                 width: "100%"
               }}>
-              <User docRef={stat.docRef} variant={leadsStyles[index]} />
+              <User
+                currenGroup={group}
+                docRef={stat.docRef}
+                variant={leadsStyles[index]}
+              />
               {stat.defis !== 0 && (
                 <DefisPoints
                   sign={stat.defis > 0 ? "+" : ""}

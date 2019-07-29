@@ -16,6 +16,7 @@ import isEmpty from "lodash/isEmpty";
 import { User } from "../../components/User";
 import { CardContent } from "semantic-ui-react";
 import dayjs from "dayjs";
+import { useGroupContext } from "../../components/Matchs";
 
 const saveDefi = (currentUser, contender) => {
   const day = dayjs();
@@ -95,7 +96,7 @@ export function Defi() {
       });
   }, []);
   const currentUser = useUserContext();
-
+  const group = useGroupContext();
   return (
     <div style={{ margin: "30px 10px 90px 10px" }}>
       <Typography style={{ margin: "10px" }} variant="h5">
@@ -159,7 +160,7 @@ export function Defi() {
                       justifyContent: "space-between",
                       marginBottom: "5px"
                     }}>
-                    <User docRef={defi.sendingTo} />
+                    <User currenGroup={group} docRef={defi.sendingTo} />
                     <Avatar style={{ background: "rgb(245, 7, 92)" }}>
                       {defi.points}
                     </Avatar>
@@ -176,7 +177,7 @@ export function Defi() {
                       justifyContent: "space-between",
                       marginBottom: "5px"
                     }}>
-                    <User docRef={defi.requester} />
+                    <User currenGroup={group} docRef={defi.requester} />
                     <Avatar style={{ background: "rgb(245, 7, 92)" }}>
                       {defi.points}
                     </Avatar>

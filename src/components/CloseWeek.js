@@ -51,10 +51,7 @@ export function CloseWeek({ year = dayjs().year(), week, stats, group }) {
         <div style={{ textAlign: "center" }}>
           {me.admin && (
             <Fragment>
-              <Button
-                onClick={() => setConfirmOpen(true)}
-                disabled={!!(matchs.length <= 0 || weekDb)}
-                color="primary">
+              <Button onClick={() => setConfirmOpen(true)} color="primary">
                 Fermer la semaine
               </Button>
               <Dialog open={confirmOpen}>

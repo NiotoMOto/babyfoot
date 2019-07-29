@@ -2,8 +2,10 @@ import React from "react";
 import { User } from "./User";
 import { Avatar, Typography } from "@material-ui/core";
 import { purple } from "@material-ui/core/colors";
+import { useGroupContext } from "./Matchs";
 
 export function DefisLists({ defis }) {
+  const group = useGroupContext();
   return (
     <div>
       {defis.length > 0 && (
@@ -20,8 +22,8 @@ export function DefisLists({ defis }) {
             alignItems: "center"
           }}>
           <div>
-            <User docRef={md.requester} />
-            <User docRef={md.sendingTo} />
+            <User currenGroup={group} docRef={md.requester} />
+            <User currenGroup={group} docRef={md.sendingTo} />
           </div>
           <div>
             <Avatar style={{ background: purple[500] }}>{md.points}</Avatar>

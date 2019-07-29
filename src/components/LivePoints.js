@@ -3,8 +3,11 @@ import orderBy from "lodash/orderBy";
 import { StatLine } from "./StatsLine";
 import { User } from "./User";
 import { DefisPoints } from "./DefisPoints";
+import { useGroupContext } from "./Matchs";
 
 export function LivePoints({ stats }) {
+  const group = useGroupContext();
+
   return (
     <Fragment>
       {orderBy(stats, ["points"], ["desc"]).map(stat => (
@@ -17,7 +20,7 @@ export function LivePoints({ stats }) {
                 justifyContent: "space-between",
                 width: "100%"
               }}>
-              <User docRef={stat.docRef} />
+              <User currenGroup={group} docRef={stat.docRef} />
               {stat.defis !== 0 && (
                 <DefisPoints
                   sign={stat.defis > 0 ? "+" : ""}

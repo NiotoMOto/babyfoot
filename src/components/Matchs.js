@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AddMatchButton } from "./AddMatchButton";
 import { AddMatchdialog } from "./AddMatchDialog";
 import { db, extractData } from "../firebaseConfig";
@@ -19,6 +19,10 @@ function getTitleStats(currentWeek, week, year, currentYear) {
     ? "Stats de cette semaine"
     : `Stats de la semaine ${week}`;
 }
+
+export const GroupContext = React.createContext();
+
+export const useGroupContext = () => useContext(GroupContext);
 
 export function Matchs({
   week = dayjs().week(),
@@ -58,28 +62,29 @@ export function Matchs({
       });
   }, []);
   return (
-    <div style={{ marginBottom: "90px", marginTop: "30px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {week - 1 > 0 && (
-          <Link to={`/matchs/${group}/${year}/${week - 1}`}>
-            <Button disabled={week - 1 <= 0}>
-              <ChevronLeft color="primary" />
-              Semaine {week - 1}
-            </Button>
-          </Link>
-        )}
-        {week - 1 <= 0 && <div />}
-        {week !== currentWeek && (
-          <Link to={`/matchs/${group}/${year}/${week + 1}`}>
-            <Button disabled={week === currentWeek}>
-              Semaine {week + 1}
-              <ChevronRight color="primary" />
-            </Button>
-          </Link>
-        )}
-      </div>
-      <div style={{ margin: "10px" }}>
-        {/* <Link to="/defi">
+    <GroupContext.Provider value={group}>
+      <div style={{ marginBottom: "90px", marginTop: "30px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          {week - 1 > 0 && (
+            <Link to={`/matchs/${group}/${year}/${week - 1}`}>
+              <Button disabled={week - 1 <= 0}>
+                <ChevronLeft color="primary" />
+                Semaine {week - 1}
+              </Button>
+            </Link>
+          )}
+          {week - 1 <= 0 && <div />}
+          {week !== currentWeek && (
+            <Link to={`/matchs/${group}/${year}/${week + 1}`}>
+              <Button disabled={week === currentWeek}>
+                Semaine {week + 1}
+                <ChevronRight color="primary" />
+              </Button>
+            </Link>
+          )}
+        </div>
+        <div style={{ margin: "10px" }}>
+          {/* <Link to="/defi">
           <Fab
             size="small"
             color="primary"
@@ -88,34 +93,35 @@ export function Matchs({
             <FitnessCenter /> Défis
           </Fab>
         </Link> */}
+        </div>
+        <Typography style={{ margin: "10px" }} variant="h5">
+          {getTitleStats(currentWeek, week, year, currentYear)}
+        </Typography>
+        <div style={{ margin: "10px" }}>
+          <MatchsStats
+            points={points}
+            week={week}
+            matchs={matchs}
+            group={group}
+          />
+        </div>
+        <Typography style={{ margin: "10px" }} variant="h5">
+          {getTitle(currentWeek, week, year, currentYear)}
+        </Typography>
+        {week === currentWeek && (
+          <AddMatchButton onClick={() => setOpenAddMatch(true)} />
+        )}
+        {openAddMatch && (
+          <AddMatchdialog
+            group={group}
+            open={openAddMatch}
+            handleClose={() => setOpenAddMatch(false)}
+          />
+        )}
+        {matchs.map((match, id) => (
+          <Match key={id} match={match} />
+        ))}
       </div>
-      <Typography style={{ margin: "10px" }} variant="h5">
-        {getTitleStats(currentWeek, week, year, currentYear)}
-      </Typography>
-      <div style={{ margin: "10px" }}>
-        <MatchsStats
-          points={points}
-          week={week}
-          matchs={matchs}
-          group={group}
-        />
-      </div>
-      <Typography style={{ margin: "10px" }} variant="h5">
-        {getTitle(currentWeek, week, year, currentYear)}
-      </Typography>
-      {week === currentWeek && (
-        <AddMatchButton onClick={() => setOpenAddMatch(true)} />
-      )}
-      {openAddMatch && (
-        <AddMatchdialog
-          group={group}
-          open={openAddMatch}
-          handleClose={() => setOpenAddMatch(false)}
-        />
-      )}
-      {matchs.map((match, id) => (
-        <Match key={id} match={match} />
-      ))}
-    </div>
+    </GroupContext.Provider>
   );
 }

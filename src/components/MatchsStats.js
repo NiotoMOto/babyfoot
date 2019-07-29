@@ -12,6 +12,7 @@ import { LeaderBoard } from "./LeaderBoard";
 import dayjs from "dayjs";
 import { LivePoints } from "./LivePoints";
 import { LoadingResult } from "./LoadingResult";
+import { useGroupContext } from "./Matchs";
 
 function calculate(sum = 0, nb) {
   return sum + nb;
@@ -97,13 +98,7 @@ function statsByUser(matchs, points) {
   });
 }
 
-export function MatchsStats({
-  matchs,
-  week,
-  year = dayjs().year(),
-  points,
-  group
-}) {
+export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   const [tab, setTab] = useState(0);
   const [weeksDb, setWeekDb] = useState(null);
   const [weeksDbLoaded, setWeeksDbLoaded] = useState(false);
@@ -112,6 +107,7 @@ export function MatchsStats({
   function handleChange(event, newValue) {
     setTab(newValue);
   }
+  const group = useGroupContext();
 
   useEffect(
     () => {
@@ -180,7 +176,9 @@ export function MatchsStats({
                         stat => (
                           <StatLine
                             key={stat.docRef.id}
-                            label={<User docRef={stat.docRef} />}
+                            label={
+                              <User currenGroup={group} docRef={stat.docRef} />
+                            }
                             value={`${stat.ratioVictories} %`}
                             tooltip="test"
                           />
@@ -193,7 +191,9 @@ export function MatchsStats({
                       {orderBy(stats, ["pary"], ["desc"]).map(stat => (
                         <StatLine
                           key={stat.docRef.id}
-                          label={<User docRef={stat.docRef} />}
+                          label={
+                            <User currenGroup={group} docRef={stat.docRef} />
+                          }
                           value={stat.party}
                         />
                       ))}
@@ -204,7 +204,9 @@ export function MatchsStats({
                       {orderBy(stats, ["buts"], ["desc"]).map(stat => (
                         <StatLine
                           key={stat.docRef.id}
-                          label={<User docRef={stat.docRef} />}
+                          label={
+                            <User currenGroup={group} docRef={stat.docRef} />
+                          }
                           value={stat.buts}
                         />
                       ))}

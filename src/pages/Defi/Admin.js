@@ -4,8 +4,10 @@ import dayjs from "dayjs";
 import { useUserContext } from "../../App";
 import { User } from "../../components/User";
 import { Avatar, Card } from "@material-ui/core";
+import { useGroupContext } from "../../components/Matchs";
 
 export function DefiAdminPage({ match }) {
+  const group = useGroupContext();
   const day = dayjs();
   const [defis, setDefis] = useState([]);
   const currentUser = useUserContext();
@@ -33,9 +35,9 @@ export function DefiAdminPage({ match }) {
             padding: "10px"
           }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <User docRef={defi.requester} />
+            <User currenGroup={group} docRef={defi.requester} />
             <div style={{ textAlign: "center" }}>TO</div>
-            <User docRef={defi.sendingTo} />
+            <User currenGroup={group} docRef={defi.sendingTo} />
           </div>
           <Avatar style={{ background: "rgb(245, 7, 92)" }}>
             {defi.points}
