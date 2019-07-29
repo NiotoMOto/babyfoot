@@ -6,28 +6,35 @@ import { get } from "lodash";
 import { variantStylesLeads } from "../constants";
 import { db } from "../firebaseConfig";
 
-export function User({ docRef, variant, userObject, currenGroup }) {
+export function User({
+  docRef,
+  variant,
+  userObject,
+  currenGroup,
+  disableLink
+}) {
   const [user, setUser] = useState(null);
-  useEffect(
-    () => {
-      if (docRef) {
-        const promise = docRef.get().then(doc => setUser(doc.data()));
-        return () => promise.then(null);
-      }
-    },
-    [docRef]
-  );
-  useEffect(
-    () => {
-      setUser(userObject);
-    },
-    [userObject]
-  );
+  useEffect(() => {
+    if (docRef) {
+      const promise = docRef.get().then(doc => setUser(doc.data()));
+      return () => promise.then(null);
+    }
+  }, [docRef]);
+  useEffect(() => {
+    setUser(userObject);
+  }, [userObject]);
   const wins = currenGroup ? get(user, `achievement.${currenGroup}`, {}) : {};
   return (
     <span>
       {user && (
-        <Link to={`/profil/${user.uid}`}>
+        <Link
+          to={`/profil/${user.uid}`}
+          onClick={e => {
+            if (disableLink) {
+              e.preventDefault();
+            }
+          }}
+        >
           <Chip
             avatar={<Avatar alt="" src={user.photoURL} />}
             label={
@@ -37,7 +44,8 @@ export function User({ docRef, variant, userObject, currenGroup }) {
                     maxWidth: "100px",
                     overflow: "hidden",
                     textOverflow: "ellipsis"
-                  }}>
+                  }}
+                >
                   {user.displayName}
                 </span>
                 {!variant && <Badges wins={wins} />}

@@ -13,6 +13,7 @@ function handleCloseWeek(week, stats, year, group) {
   return db.collection("weeks").add({
     stats,
     week,
+    group: db.collection("groups").doc(group),
     year: dayjs().year(),
     group: db.collection("groups").doc(group)
   });
@@ -22,29 +23,26 @@ export function CloseWeek({ year = dayjs().year(), week, stats, group }) {
   const [matchs, setMatchs] = useState([]);
   const [weekDb, setWeekDb] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  useEffect(
-    () => {
-      db.collection("matchs")
-        .where("week", "==", week)
-        .where("year", "==", year)
-        .where("group", "==", db.collection("groups").doc(group))
-        .orderBy("createdAt", "desc")
-        .get()
-        .then(doc => {
-          setMatchs(extractData(doc));
-        });
-      db.collection("weeks")
-        .where("week", "==", week)
-        .where("year", "==", year)
-        .where("group", "==", db.collection("groups").doc(group))
-        .onSnapshot(doc => {
-          if (doc.docs.length) {
-            setWeekDb(extractData(doc)[0]);
-          }
-        });
-    },
-    [week]
-  );
+  useEffect(() => {
+    db.collection("matchs")
+      .where("week", "==", week)
+      .where("year", "==", year)
+      .where("group", "==", db.collection("groups").doc(group))
+      .orderBy("createdAt", "desc")
+      .get()
+      .then(doc => {
+        setMatchs(extractData(doc));
+      });
+    db.collection("weeks")
+      .where("week", "==", week)
+      .where("year", "==", year)
+      .where("group", "==", db.collection("groups").doc(group))
+      .onSnapshot(doc => {
+        if (doc.docs.length) {
+          setWeekDb(extractData(doc)[0]);
+        }
+      });
+  }, [week]);
   return (
     <UserContext.Consumer>
       {me => (
@@ -65,7 +63,8 @@ export function CloseWeek({ year = dayjs().year(), week, stats, group }) {
                       handleCloseWeek(week, stats, year, group).then(() =>
                         setConfirmOpen(false)
                       )
-                    }>
+                    }
+                  >
                     Oui
                   </Button>
                 </DialogActions>

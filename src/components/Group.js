@@ -1,14 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
-import { TextField, Card, CardActions } from "@material-ui/core";
+import { TextField, Card, CardActions, Typography } from "@material-ui/core";
 import { Button } from "@material-ui/core";
-import { CardContent } from "semantic-ui-react";
+import { orderBy } from "lodash";
+import { CardContent, CardHeader } from "semantic-ui-react";
 import dayjs from "dayjs";
+import { User } from "./User";
 
 export const Group = ({ group, history, modeAdmin }) => {
   const currentWeek = dayjs().week();
   const currentYear = dayjs().year();
   const [newGroup, setNewgroup] = useState(group);
+  const [king, setKing] = useState({});
+
+  // useEffect(() => {
+  //   db.collection("");
+  // }, []);
+
+  useEffect(() => {
+    db.collection("weeks")
+      .where("group", "==", db.collection("groups").doc(group.id))
+      .where("week", "==", dayjs().week() - 1 ? dayjs().week() - 1 : 52)
+      .get()
+      .then(result => {
+        if (!result.empty) {
+          setKing(
+            orderBy(
+              result.docs.map(d => d.data().stats)[0],
+              "points",
+              "desc"
+            )[0]
+          );
+        }
+      });
+  }, []);
 
   const removeGroup = id => {
     db.collection("groups")
@@ -32,7 +57,7 @@ export const Group = ({ group, history, modeAdmin }) => {
       .doc(group.id)
       .update(newGroup);
   };
-  console.log(newGroup);
+  console.log("king", king);
   return (
     <Card
       style={{ margin: "10px", padding: "20px" }}
@@ -40,9 +65,39 @@ export const Group = ({ group, history, modeAdmin }) => {
         if (!modeAdmin) {
           history.push(`matchs/${group.id}/${currentYear}/${currentWeek}`);
         }
-      }}>
+      }}
+    >
+      <CardHeader>
+        <Typography
+          style={{ textAlign: "center", color: "#0d47a1" }}
+          variant="h4"
+        >
+          {group.name}
+        </Typography>
+      </CardHeader>
       <CardContent>
-        {group.name}
+        <div style={{ textAlign: "center", color: "#C98910" }}>
+          <Typography variant="h6">King</Typography>
+          {king && (
+            <User
+              disableLink
+              variant="or"
+              docRef={king.docRef}
+              currenGroup={group.id}
+            />
+          )}
+        </div>
+        <div style={{ textAlign: "center", color: "#f44336" }}>
+          <Typography variant="h6">Prince</Typography>
+          {group && (
+            <User
+              disableLink
+              variant="prince"
+              docRef={group.prince}
+              currenGroup={group.id}
+            />
+          )}
+        </div>
         {modeAdmin && newGroup.points && (
           <div>
             <TextField
@@ -68,7 +123,7 @@ export const Group = ({ group, history, modeAdmin }) => {
       </CardContent>
       {modeAdmin && (
         <CardActions>
-          <Button onClick={() => removeGroup(newGroup.id)}>Supprimer</Button>
+          {/* <Button onClick={() => removeGroup(newGroup.id)}>Supprimer</Button> */}
           <Button color="primary" onClick={updateGroup}>
             Sauvegarder
           </Button>

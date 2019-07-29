@@ -34,22 +34,19 @@ export function Matchs({
   const [points, setPoints] = useState(null);
   const currentWeek = dayjs().week();
   const currentYear = dayjs().year();
-  useEffect(
-    () => {
-      const unsubscribe = db
-        .collection("matchs")
-        .where("week", "==", week)
-        .where("year", "==", year)
-        .where("group", "==", db.collection("groups").doc(group))
-        .orderBy("createdAt", "desc")
-        .onSnapshot(doc => {
-          setMatchs(extractData(doc));
-        });
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("matchs")
+      .where("week", "==", week)
+      .where("year", "==", year)
+      .where("group", "==", db.collection("groups").doc(group))
+      .orderBy("createdAt", "desc")
+      .onSnapshot(doc => {
+        setMatchs(extractData(doc));
+      });
 
-      return () => unsubscribe();
-    },
-    [week, year]
-  );
+    return () => unsubscribe();
+  }, [week, year]);
 
   useEffect(() => {
     db.collection("groups")
@@ -61,6 +58,7 @@ export function Matchs({
         }
       });
   }, []);
+
   return (
     <GroupContext.Provider value={group}>
       <div style={{ marginBottom: "90px", marginTop: "30px" }}>

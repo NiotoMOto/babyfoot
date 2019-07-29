@@ -35,6 +35,36 @@ export function DefiPage({ match }) {
           });
       });
 
+  const updateweeks = () =>
+    db
+      .collection("groups")
+      .get()
+      .then(groupDoc => {
+        group = extractData(groupDoc)[0];
+        return group;
+      })
+      .then(() => {
+        db.collection("weeks")
+          .get()
+          .then(doc => {
+            const weeks = extractData(doc);
+            console.log("weeks a metre a jours :", weeks.length);
+            return weeks;
+          })
+          .then(weeks => {
+            return Promise.all(
+              weeks.map(week =>
+                db
+                  .collection("weeks")
+                  .doc(week.id)
+                  .update({
+                    group: db.collection("groups").doc(group.id)
+                  })
+              )
+            ).then(() => console.log("ALL FINISHED"));
+          });
+      });
+
   const updateUsers = () =>
     db
       .collection("groups")
@@ -73,6 +103,9 @@ export function DefiPage({ match }) {
       </Button>
       <Button color="primary" onClick={updateUsers}>
         Update users
+      </Button>
+      <Button color="primary" onClick={updateweeks}>
+        Update weeks
       </Button>
     </div>
   );
