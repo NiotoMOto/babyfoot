@@ -2,55 +2,59 @@ import React from "react";
 import { ProfileLine } from "../../components/ProfileLine";
 import { roundRation } from "../../utils";
 
+const defualtStats = {
+  buts: 0,
+  butsNeg: 0,
+  defeats: 0,
+  parties: 0,
+  victories: 0
+};
+
 export function ProfileStats({ currentUser, user, groupId }) {
   const isCurrentUser = currentUser.uid === user.uid;
+  const statsUser = user.stats[groupId] || defualtStats;
+  const statsCurrentUser = currentUser.stats[groupId] || defualtStats;
   return (
     <div style={{ margin: "10px" }}>
       <ProfileLine
         label="buts"
-        value={user.stats[groupId].buts}
-        valueCurrentUser={currentUser.stats[groupId].buts}
+        value={statsUser.buts}
+        valueCurrentUser={statsCurrentUser.buts}
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
         label="Buts donnés / buts pris"
-        value={roundRation(
-          user.stats[groupId].buts / user.stats[groupId].butsNeg
-        )}
+        value={roundRation(statsUser.buts / statsUser.butsNeg)}
         valueCurrentUser={roundRation(
-          currentUser.stats[groupId].buts / currentUser.stats[groupId].butsNeg
+          statsCurrentUser.buts / statsCurrentUser.butsNeg
         )}
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
         label="matchs"
-        value={user.stats[groupId].parties}
-        valueCurrentUser={currentUser.stats[groupId].parties}
+        value={statsUser.parties}
+        valueCurrentUser={statsCurrentUser.parties}
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
         label="victoires"
-        value={user.stats[groupId].victories}
-        valueCurrentUser={currentUser.stats[groupId].victories}
+        value={statsUser.victories}
+        valueCurrentUser={statsCurrentUser.victories}
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
         label="Taux victoires"
-        value={Math.round(
-          (user.stats[groupId].victories / user.stats[groupId].parties) * 100
-        )}
+        value={Math.round((statsUser.victories / statsUser.parties) * 100)}
         valueCurrentUser={Math.round(
-          (currentUser.stats[groupId].victories /
-            currentUser.stats[groupId].parties) *
-            100
+          (statsCurrentUser.victories / statsCurrentUser.parties) * 100
         )}
         unit="%"
         isCurrentUser={isCurrentUser}
       />
       <ProfileLine
         label="défaites"
-        value={user.stats[groupId].defeats}
-        valueCurrentUser={currentUser.stats[groupId].defeats}
+        value={statsUser.defeats}
+        valueCurrentUser={statsCurrentUser.defeats}
         isCurrentUser={isCurrentUser}
         negativeData
       />

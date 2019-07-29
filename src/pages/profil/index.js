@@ -13,7 +13,7 @@ const DisplayGroup = ({ groupId }) => {
       if (groupId) {
         db.collection("groups")
           .doc(groupId)
-          .get()
+          .get({ source: 'cache'})
           .then(doc => setgroup(doc.data()));
       }
     },
