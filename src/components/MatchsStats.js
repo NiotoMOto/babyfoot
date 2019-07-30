@@ -109,47 +109,54 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
   }
   const group = useGroupContext();
 
-  useEffect(() => {
-    setWeeksDbLoaded(false);
-    setWeekDb(null);
-    setStats(null);
-    const unsubscribe = db
-      .collection("weeks")
-      .where("week", "==", week)
-      .where("year", "==", year)
-      .where("group", "==", db.collection("groups").doc(group))
-      .onSnapshot(
-        doc => {
-          if (doc.docs.length) {
-            setWeekDb(extractData(doc)[0]);
-          } else {
-            setWeekDb(null);
-          }
-          setWeeksDbLoaded(true);
-        },
-        () => setWeeksDbLoaded(true)
-      );
-    return () => unsubscribe();
-  }, [week, year]);
+  useEffect(
+    () => {
+      setWeeksDbLoaded(false);
+      setWeekDb(null);
+      setStats(null);
+      const unsubscribe = db
+        .collection("weeks")
+        .where("week", "==", week)
+        .where("year", "==", year)
+        .where("group", "==", db.collection("groups").doc(group))
+        .onSnapshot(
+          doc => {
+            if (doc.docs.length) {
+              setWeekDb(extractData(doc)[0]);
+            } else {
+              setWeekDb(null);
+            }
+            setWeeksDbLoaded(true);
+          },
+          () => setWeeksDbLoaded(true)
+        );
+      return () => unsubscribe();
+    },
+    [week, year]
+  );
 
-  useEffect(() => {
-    if (points) {
-      statsByUser(matchs, points).then(s => {
-        console.log(orderBy(s, "points", "desc"));
-        orderBy(s, "points", "desc");
-        const stats = orderBy(s, "points", "desc");
-        if (stats.length) {
-          db.collection("groups")
-            .doc(group)
-            .update({
-              prince: stats[0].docRef,
-              princeWeek: week
-            });
-        }
-        setStats(s);
-      });
-    }
-  }, [matchs, points]);
+  useEffect(
+    () => {
+      if (points) {
+        statsByUser(matchs, points).then(s => {
+          orderBy(s, "points", "desc");
+          const stats = orderBy(s, "points", "desc");
+          if (stats.length) {
+            if (dayjs().week() === week) {
+              db.collection("groups")
+                .doc(group)
+                .update({
+                  prince: stats[0].docRef,
+                  princeWeek: week
+                });
+            }
+          }
+          setStats(s);
+        });
+      }
+    },
+    [matchs, points]
+  );
 
   return (
     <div>
