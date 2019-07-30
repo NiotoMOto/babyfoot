@@ -186,23 +186,21 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
                   )}
                   {tab === 1 && (
                     <Fragment>
-                      {orderBy(stats, ["ratioVictories"], ["desc"]).map(
-                        stat => (
-                          <StatLine
-                            key={stat.docRef.id}
-                            label={
-                              <User currenGroup={group} docRef={stat.docRef} />
-                            }
-                            value={`${stat.ratioVictories} %`}
-                            tooltip="test"
-                          />
-                        )
-                      )}
+                      {orderBy(stats, "ratioVictories", "desc").map(stat => (
+                        <StatLine
+                          key={stat.docRef.id}
+                          label={
+                            <User currenGroup={group} docRef={stat.docRef} />
+                          }
+                          value={`${stat.ratioVictories} %`}
+                          tooltip="test"
+                        />
+                      ))}
                     </Fragment>
                   )}
                   {tab === 2 && (
                     <Fragment>
-                      {orderBy(stats, ["pary"], ["desc"]).map(stat => (
+                      {orderBy(stats, "party", "desc").map(stat => (
                         <StatLine
                           key={stat.docRef.id}
                           label={
@@ -215,7 +213,7 @@ export function MatchsStats({ matchs, week, year = dayjs().year(), points }) {
                   )}{" "}
                   {tab === 3 && (
                     <Fragment>
-                      {orderBy(stats, ["buts"], ["desc"]).map(stat => (
+                      {orderBy(stats, "buts", "desc").map(stat => (
                         <StatLine
                           key={stat.docRef.id}
                           label={

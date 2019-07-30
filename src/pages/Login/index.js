@@ -10,7 +10,6 @@ export const Login = () => {
       signInSuccessUrl: "/"
     });
   }, []);
-  console.log(loginbg);
   return (
     <div style={{ height: "100%" }}>
       <div

@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { db } from "../firebaseConfig";
-import { TextField, Card, CardActions, Typography } from "@material-ui/core";
+import {
+  TextField,
+  Card,
+  CardActions,
+  Typography,
+  CardMedia,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar
+} from "@material-ui/core";
 import { Button } from "@material-ui/core";
 import { orderBy } from "lodash";
-import { CardContent, CardHeader } from "semantic-ui-react";
+import { CardContent, CardHeader, Divider } from "semantic-ui-react";
 import dayjs from "dayjs";
 import { User } from "./User";
 
@@ -57,47 +67,48 @@ export const Group = ({ group, history, modeAdmin }) => {
       .doc(group.id)
       .update(newGroup);
   };
-  console.log("king", king);
   return (
-    <Card
-      style={{ margin: "10px", padding: "20px" }}
-      onClick={() => {
-        if (!modeAdmin) {
-          history.push(`matchs/${group.id}/${currentYear}/${currentWeek}`);
-        }
-      }}
-    >
+    <Card style={{ margin: "10px", padding: "20px" }}>
+      {/* <CardMedia
+        image="/static/images/cards/contemplative-reptile.jpg"
+        title="Contemplative Reptile"
+      /> */}
       <CardHeader>
         <Typography
           style={{ textAlign: "center", color: "#0d47a1" }}
-          variant="h4"
-        >
+          variant="h4">
           {group.name}
         </Typography>
       </CardHeader>
       <CardContent>
-        <div style={{ textAlign: "center", color: "#C98910" }}>
-          <Typography variant="h6">King</Typography>
-          {king && (
-            <User
-              disableLink
-              variant="or"
-              docRef={king.docRef}
-              currenGroup={group.id}
-            />
-          )}
-        </div>
-        <div style={{ textAlign: "center", color: "#f44336" }}>
-          <Typography variant="h6">Prince</Typography>
-          {group && (
-            <User
-              disableLink
-              variant="prince"
-              docRef={group.prince}
-              currenGroup={group.id}
-            />
-          )}
-        </div>
+        <List>
+          <ListItem style={{ textAlign: "center", color: "#C98910" }}>
+            <ListItemAvatar>
+              {king && (
+                <User
+                  disableLink
+                  variant="or"
+                  docRef={king.docRef}
+                  currenGroup={group.id}
+                />
+              )}
+            </ListItemAvatar>
+            <ListItemText style={{ textAlign: "right" }} primary="King" />
+          </ListItem>
+          <ListItem style={{ textAlign: "center", color: "#f44336" }}>
+            {group && (
+              <ListItemAvatar>
+                <User
+                  disableLink
+                  variant="prince"
+                  docRef={group.prince}
+                  currenGroup={group.id}
+                />
+              </ListItemAvatar>
+            )}
+            <ListItemText style={{ textAlign: "right" }} primary="Prince" />
+          </ListItem>
+        </List>
         {modeAdmin && newGroup.points && (
           <div>
             <TextField
@@ -121,14 +132,25 @@ export const Group = ({ group, history, modeAdmin }) => {
           </div>
         )}
       </CardContent>
-      {modeAdmin && (
-        <CardActions>
-          {/* <Button onClick={() => removeGroup(newGroup.id)}>Supprimer</Button> */}
-          <Button color="primary" onClick={updateGroup}>
-            Sauvegarder
-          </Button>
-        </CardActions>
-      )}
+      <CardActions style={{ textAlign: "right" }}>
+        <Divider />
+        <Button
+          onClick={() => {
+            history.push(`matchs/${group.id}/${currentYear}/${currentWeek}`);
+          }}
+          color="primary"
+          size="large">
+          Y aller
+        </Button>
+        {modeAdmin && (
+          <Fragment>
+            {/* <Button onClick={() => removeGroup(newGroup.id)}>Supprimer</Button> */}
+            <Button color="primary" onClick={updateGroup}>
+              Sauvegarder
+            </Button>
+          </Fragment>
+        )}
+      </CardActions>
     </Card>
   );
 };
