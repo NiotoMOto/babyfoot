@@ -15,6 +15,7 @@ import { MatchsStats } from "./MatchsStats";
 import { Link } from "react-router-dom";
 import { ChevronRight, ChevronLeft, FitnessCenter } from "@material-ui/icons";
 import { AddDefiButton } from "./AddDefiButton";
+import { Defi } from "../pages/Defi/Defi";
 
 function getTitle(currentWeek, week, year, currentYear) {
   return currentWeek === week && year === currentYear
@@ -129,7 +130,7 @@ export function Matchs({
         {week === currentWeek && (
           <Fragment>
             <AddMatchButton onClick={() => setOpenAddMatch(true)} />
-            <AddDefiButton />
+            {/* <AddDefiButton onClick={() => setOpenAddDefi(true)} /> */}
           </Fragment>
         )}
         {openAddMatch && (
@@ -140,8 +141,14 @@ export function Matchs({
           />
         )}
         {openAddDefi && (
-          <Dialog open={openAddDefi} handleClose={() => setOpenAddDefi(false)}>
-            <DialogContent>Test</DialogContent>
+          <Dialog
+            fullScreen
+            open={openAddDefi}
+            handleClose={() => setOpenAddDefi(false)}
+          >
+            <DialogContent>
+              <Defi group={group} />
+            </DialogContent>
           </Dialog>
         )}
         {matchs.map((match, id) => (

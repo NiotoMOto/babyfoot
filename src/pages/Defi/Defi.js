@@ -40,16 +40,21 @@ export function Defi() {
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(false);
+  const currentUser = useUserContext();
+  const group = useGroupContext();
   const day = dayjs();
   function handleChange(event, newValue) {
     setTab(newValue);
   }
+
+  console.log(group);
 
   useEffect(() => {
     const unsubscribe = db
       .collection("defis")
       .where("requester", "==", db.collection("users").doc(currentUser.uid))
       .where("winner", "==", null)
+      .where("group", "==", db.collection("groups").doc(group))
       .where("week", "==", day.week())
       .where("year", "==", day.year())
       .orderBy("createdAt", "desc")
@@ -64,6 +69,7 @@ export function Defi() {
       .collection("defis")
       .where("sendingTo", "==", db.collection("users").doc(currentUser.uid))
       .where("winner", "==", null)
+      .where("group", "==", db.collection("groups").doc(group))
       .where("week", "==", day.week())
       .where("year", "==", day.year())
       .orderBy("createdAt", "desc")
@@ -95,8 +101,7 @@ export function Defi() {
         setUsers(extractData(doc));
       });
   }, []);
-  const currentUser = useUserContext();
-  const group = useGroupContext();
+
   return (
     <div style={{ margin: "30px 10px 90px 10px" }}>
       <Typography style={{ margin: "10px" }} variant="h5">
