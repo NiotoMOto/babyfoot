@@ -122,7 +122,8 @@ export function Defi() {
               textAlign: "center",
               display: "flex",
               alignItems: "center"
-            }}>
+            }}
+          >
             <Button
               onClick={() => {
                 setLoading(true);
@@ -132,7 +133,8 @@ export function Defi() {
               }}
               color="primary"
               disabled={isEmpty(contender) || loading || defisToday.length >= 2}
-              variant="contained">
+              variant="contained"
+            >
               Enregister defi
             </Button>
             <div style={{ paddingLeft: "10px" }}>
@@ -159,7 +161,8 @@ export function Defi() {
                       display: "flex",
                       justifyContent: "space-between",
                       marginBottom: "5px"
-                    }}>
+                    }}
+                  >
                     <User currenGroup={group} docRef={defi.sendingTo} />
                     <Avatar style={{ background: "rgb(245, 7, 92)" }}>
                       {defi.points}
@@ -176,7 +179,8 @@ export function Defi() {
                       display: "flex",
                       justifyContent: "space-between",
                       marginBottom: "5px"
-                    }}>
+                    }}
+                  >
                     <User currenGroup={group} docRef={defi.requester} />
                     <Avatar style={{ background: "rgb(245, 7, 92)" }}>
                       {defi.points}

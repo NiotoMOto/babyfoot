@@ -1,24 +1,25 @@
 import React from "react";
 import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
+import { FitnessCenter } from "@material-ui/icons";
+import purple from "@material-ui/core/colors/purple";
 
-export function AddMatchButton({ onClick }) {
+export function AddDefiButton({ onClick }) {
   return (
     <div>
       <Fab
         style={{
           position: "fixed",
           bottom: "20px",
-          right: "20px",
+          left: "20px",
           zIndex: 99,
           color: "white",
-          background: "black"
+          background: purple[400]
         }}
         size="medium"
         aria-label="Add"
         onClick={onClick}
       >
-        <AddIcon />
+        <FitnessCenter />
       </Fab>
     </div>
   );

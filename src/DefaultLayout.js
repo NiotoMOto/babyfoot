@@ -8,8 +8,15 @@ export const DefaultLayout = ({ component: Component, ...rest }) => {
       {...rest}
       render={matchProps => (
         <div style={{ height: "100vh" }}>
-          <Header />
-          <Component {...matchProps} />
+          <Header>
+            {(setTitle, setColor) => (
+              <Component
+                setColor={setColor}
+                setTitle={setTitle}
+                {...matchProps}
+              />
+            )}
+          </Header>
         </div>
       )}
     />

@@ -61,6 +61,13 @@ export const Group = ({ group, history, modeAdmin }) => {
       }
     });
   };
+  const handleGroupChange = (e, field) => {
+    const value = e.target.value;
+    setNewgroup({
+      ...group,
+      [field]: value
+    });
+  };
 
   const updateGroup = () => {
     db.collection("groups")
@@ -76,7 +83,8 @@ export const Group = ({ group, history, modeAdmin }) => {
       <CardHeader>
         <Typography
           style={{ textAlign: "center", color: "#0d47a1" }}
-          variant="h4">
+          variant="h4"
+        >
           {group.name}
         </Typography>
       </CardHeader>
@@ -129,6 +137,11 @@ export const Group = ({ group, history, modeAdmin }) => {
               type="number"
               label="points par victore"
             />
+            <TextField
+              onChange={e => handleGroupChange(e, "color")}
+              value={newGroup.color}
+              label="color"
+            />
           </div>
         )}
       </CardContent>
@@ -139,7 +152,8 @@ export const Group = ({ group, history, modeAdmin }) => {
             history.push(`matchs/${group.id}/${currentYear}/${currentWeek}`);
           }}
           color="primary"
-          size="large">
+          size="large"
+        >
           Y aller
         </Button>
         {modeAdmin && (

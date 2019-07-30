@@ -20,6 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import { UserContext } from "./App";
 import { askForPermissioToReceiveNotifications } from "./pushNotification";
+import { useGroupContext } from "./components/Matchs";
 
 function SnakBar({ open, handleClose }) {
   return (
@@ -40,7 +41,8 @@ function SnakBar({ open, handleClose }) {
           key="close"
           aria-label="Close"
           color="inherit"
-          onClick={handleClose}>
+          onClick={handleClose}
+        >
           <CloseIcon />
         </IconButton>
       ]}
@@ -73,7 +75,8 @@ function Menu() {
                   await askForPermissioToReceiveNotifications(me);
                   setNotifDone(true);
                 } catch (e) {}
-              }}>
+              }}
+            >
               <ListItemIcon>
                 <InboxIcon />
               </ListItemIcon>
@@ -87,26 +90,31 @@ function Menu() {
   );
 }
 
-export function Header() {
+export function Header({ children }) {
   const [menu, setMenu] = useState(false);
+  const group = useGroupContext();
+  const [title, setTitle] = useState("");
+  const [color, setColor] = useState("#0d47a1");
+  console.log(group);
   return (
-    <Fragment>
+    <div>
       <Drawer open={menu} onClose={() => setMenu(false)}>
         <div tabIndex={0} role="button">
           <Menu />
         </div>
       </Drawer>
-      <AppBar color="primary" position="relative">
+      <AppBar style={{ background: color }} position="relative">
         <Toolbar>
           <IconButton
             onClick={() => setMenu(true)}
             color="inherit"
-            aria-label="Menu">
+            aria-label="Menu"
+          >
             <MenuIcon />
           </IconButton>
           <Typography style={{ color: "white", flexGrow: 1 }} variant="h5">
             <Link style={{ textDecoration: "none", color: "white" }} to="/">
-              King of baby
+              King of {title}
             </Link>
           </Typography>
           <Button
@@ -115,11 +123,13 @@ export function Header() {
                 .signOut()
                 .then(() => window.location.reload())
             }
-            color="inherit">
+            color="inherit"
+          >
             Logout
           </Button>
         </Toolbar>
       </AppBar>
-    </Fragment>
+      {children(setTitle, setColor)}
+    </div>
   );
 }

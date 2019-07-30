@@ -1,13 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { AddMatchButton } from "./AddMatchButton";
 import { AddMatchdialog } from "./AddMatchDialog";
 import { db, extractData } from "../firebaseConfig";
 import { Match } from "./Match";
 import dayjs from "dayjs";
-import { Typography, Button, Fab } from "@material-ui/core";
+import {
+  Typography,
+  Button,
+  Fab,
+  Dialog,
+  DialogContent
+} from "@material-ui/core";
 import { MatchsStats } from "./MatchsStats";
 import { Link } from "react-router-dom";
 import { ChevronRight, ChevronLeft, FitnessCenter } from "@material-ui/icons";
+import { AddDefiButton } from "./AddDefiButton";
 
 function getTitle(currentWeek, week, year, currentYear) {
   return currentWeek === week && year === currentYear
@@ -27,9 +34,15 @@ export const useGroupContext = () => useContext(GroupContext);
 export function Matchs({
   week = dayjs().week(),
   year = dayjs().year(),
-  group
+  group,
+  setTitle,
+  setColor
 }) {
   const [openAddMatch, setOpenAddMatch] = useState(false);
+  const [openAddDefi, setOpenAddDefi] = useState(false);
+  if (setTitle) {
+  }
+
   const [matchs, setMatchs] = useState([]);
   const [points, setPoints] = useState(null);
   const currentWeek = dayjs().week();
@@ -54,7 +67,14 @@ export function Matchs({
       .onSnapshot(doc => {
         const data = doc.data();
         if (data) {
-          setPoints(doc.data().points);
+          setPoints(data.points);
+          if (setTitle) {
+            setTitle(data.name);
+          }
+          console.log(data.color, setColor);
+          if (setColor) {
+            setColor(data.color);
+          }
         }
       });
   }, []);
@@ -107,7 +127,10 @@ export function Matchs({
           {getTitle(currentWeek, week, year, currentYear)}
         </Typography>
         {week === currentWeek && (
-          <AddMatchButton onClick={() => setOpenAddMatch(true)} />
+          <Fragment>
+            <AddMatchButton onClick={() => setOpenAddMatch(true)} />
+            <AddDefiButton />
+          </Fragment>
         )}
         {openAddMatch && (
           <AddMatchdialog
@@ -115,6 +138,11 @@ export function Matchs({
             open={openAddMatch}
             handleClose={() => setOpenAddMatch(false)}
           />
+        )}
+        {openAddDefi && (
+          <Dialog open={openAddDefi} handleClose={() => setOpenAddDefi(false)}>
+            <DialogContent>Test</DialogContent>
+          </Dialog>
         )}
         {matchs.map((match, id) => (
           <Match key={id} match={match} />

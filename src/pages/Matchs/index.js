@@ -1,10 +1,15 @@
 import React from "react";
 import { Matchs } from "../../components/Matchs";
 
-export function MatchsPage({ match, group }) {
+export function MatchsPage({ match, setTitle, setColor }) {
   return (
     <div>
-      <Matchs group={match.params.group} week={parseInt(match.params.week)} />
+      <Matchs
+        setTitle={setTitle}
+        setColor={setColor}
+        group={match.params.group}
+        week={parseInt(match.params.week)}
+      />
     </div>
   );
 }

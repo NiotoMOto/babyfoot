@@ -14,6 +14,7 @@ import { Loader } from "./components/Loader";
 import { MatchsPage } from "./pages/Matchs";
 import { ProfilPage } from "./pages/profil";
 import { DefiPage } from "./pages/Defi";
+import { AdminPage } from "./pages/Admin";
 import { DefiAdminPage } from "./pages/Defi/Admin";
 import { askForPermissioToReceiveNotifications } from "./pushNotification";
 
@@ -89,6 +90,11 @@ function Routes({ me, noUser }) {
                 exact
                 path="/defi"
                 component={withAuthUser(DefiPage)}
+              />
+              <DefaultLayout
+                exact
+                path="/admin"
+                component={withAuthUser(AdminPage)}
               />
               <DefaultLayout
                 exact
