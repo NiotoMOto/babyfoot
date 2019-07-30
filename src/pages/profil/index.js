@@ -13,7 +13,7 @@ const DisplayGroup = ({ groupId }) => {
       if (groupId) {
         db.collection("groups")
           .doc(groupId)
-          .get({ source: 'cache'})
+          .get({ source: "cache" })
           .then(doc => setgroup(doc.data()));
       }
     },
@@ -77,7 +77,9 @@ export function ProfilPage({ match }) {
                       <DisplayGroup groupId={groupId} />
                     </Typography>
                     <div>
-                      <Badges wins={user[groupId] ? user[groupId].wins : {}} />
+                      <Badges
+                        wins={user.wins ? user.wins[groupId] || {} : {}}
+                      />
                     </div>
                     {user.stats && me.stats && (
                       <ProfileStats

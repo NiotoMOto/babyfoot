@@ -100,7 +100,7 @@ function storeWeeksStats(stats, group) {
     _.take(_.orderBy(stats, ["points"], ["desc"]), 3).map((stat, index) => {
       return stat.docRef.get().then(user => {
         const userData = user.data();
-        const fieldToUpdate = `achievement.${group.id}.${labelPosition[index]}`;
+        const fieldToUpdate = `wins.${group.id}.${labelPosition[index]}`;
         console.log("STATS =======>", stat);
         console.log("group data =======>", group.id);
         console.log("fieldToUpdate =======>", fieldToUpdate);

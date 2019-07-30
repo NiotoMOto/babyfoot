@@ -14,16 +14,22 @@ export function User({
   disableLink
 }) {
   const [user, setUser] = useState(null);
-  useEffect(() => {
-    if (docRef) {
-      const promise = docRef.get().then(doc => setUser(doc.data()));
-      return () => promise.then(null);
-    }
-  }, [docRef]);
-  useEffect(() => {
-    setUser(userObject);
-  }, [userObject]);
-  const wins = currenGroup ? get(user, `achievement.${currenGroup}`, {}) : {};
+  useEffect(
+    () => {
+      if (docRef) {
+        const promise = docRef.get().then(doc => setUser(doc.data()));
+        return () => promise.then(null);
+      }
+    },
+    [docRef]
+  );
+  useEffect(
+    () => {
+      setUser(userObject);
+    },
+    [userObject]
+  );
+  const wins = currenGroup ? get(user, `wins.${currenGroup}`, {}) : {};
   return (
     <span>
       {user && (
@@ -33,8 +39,7 @@ export function User({
             if (disableLink) {
               e.preventDefault();
             }
-          }}
-        >
+          }}>
           <Chip
             avatar={<Avatar alt="" src={user.photoURL} />}
             label={
@@ -44,11 +49,10 @@ export function User({
                     maxWidth: "100px",
                     overflow: "hidden",
                     textOverflow: "ellipsis"
-                  }}
-                >
+                  }}>
                   {user.displayName}
                 </span>
-                {!variant && <Badges wins={wins} />}
+                {!variant && <Badges wins={wins || {}} />}
               </div>
             }
             style={variantStylesLeads[variant]}
