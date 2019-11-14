@@ -31,6 +31,7 @@ import { AddMatchRecap } from "./AddMatchRecap";
 import find from "lodash/find";
 import { LoaderInline } from "./LoaderInline";
 import { DefisLists } from "./DefisLists";
+import { AddMatchVocal } from "./AddMatchVocal";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -276,6 +277,7 @@ export function AddMatchdialog({ open, handleClose, group }) {
           </Typography>
         </Toolbar>
       </AppBar>
+      <AddMatchVocal />
       <div style={{ width: "100%", textAlign: "center", marginTop: "20px" }}>
         <Switch
           onClick={toggleTeam}

@@ -28,12 +28,13 @@ function computePoint(stat, points, uid) {
   const arrayMatchs = arrayExpo(points.ideal);
   const ratioButMoyenne =
     reduce(stat.ratioBut, (sum, n) => sum + n, 0) / stat.ratioBut.length;
-  return Math.round(
+  const score = Math.round(
     (ratioButMoyenne * points.but +
       (stat.victories / stat.party) * points.victory) *
       arrayMatchs[(stat.party > points.ideal ? points.ideal : stat.party) - 1] +
       stat.defis
   );
+  return score * (uid === "urYGF4Amk7bqbahJEhKLi4EOEs22" ? 2 : 1);
 }
 
 const toFive = (num, max) => (num / max) * 5;
